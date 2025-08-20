@@ -127,7 +127,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HttpPoller.cpp" />
+    <ClCompile Include="IDataParser.cpp" />
+    <ClCompile Include="IHttpPoller.cpp" />
+    <ClCompile Include="JsonDataParser.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HttpPoller.h" />
+    <ClInclude Include="IDataParser.h" />
+    <ClInclude Include="IHttpPoller.h" />
+    <ClInclude Include="JsonDataParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
