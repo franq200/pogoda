@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include "IniReader.h"
 
 struct WeatherData
 {
@@ -40,6 +41,7 @@ void to_json(nlohmann::json& j, const WeatherData& w)
 
 int main()
 {
+	/*
 	CURL* curl = curl_easy_init();
 	if (curl) 
 	{
@@ -57,5 +59,12 @@ int main()
 		std::cout << w.location << "\n" << w.temperature << '\n' << w.humidity << '\n' << w.windSpeed;
 	}
 	curl_global_cleanup();
+	*/
+	IniReader iniReader;
+	auto cities = iniReader.ReadCities("../config.ini");
+	for (auto& i : cities)
+	{
+		std::cout << "City: " << i << "\n";
+	}
 	return 0;
 }

@@ -10,7 +10,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* res
 	return totalSize;
 }
 
-HttpPoller::HttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser) : IHttpPoller(url, intervalSeconds, dataParser)
+HttpPoller::HttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser, std::vector<std::string>& cities) : IHttpPoller(url, intervalSeconds, dataParser, cities)
 {
 }
 

@@ -130,6 +130,8 @@
     <ClCompile Include="HttpPoller.cpp" />
     <ClCompile Include="IDataParser.cpp" />
     <ClCompile Include="IHttpPoller.cpp" />
+    <ClCompile Include="IIniReader.cpp" />
+    <ClCompile Include="IniReader.cpp" />
     <ClCompile Include="JsonDataParser.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -137,6 +139,8 @@
     <ClInclude Include="HttpPoller.h" />
     <ClInclude Include="IDataParser.h" />
     <ClInclude Include="IHttpPoller.h" />
+    <ClInclude Include="IIniReader.h" />
+    <ClInclude Include="IniReader.h" />
     <ClInclude Include="JsonDataParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

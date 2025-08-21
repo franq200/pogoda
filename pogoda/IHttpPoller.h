@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "IDataParser.h"
 
 struct WeatherData
@@ -13,12 +14,13 @@ struct WeatherData
 class IHttpPoller
 {
 public:
-	IHttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser);
+	IHttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser, std::vector<std::string>& cities);
 	virtual ~IHttpPoller() = default;
 protected:
 	std::string url_;
 	int intervalSeconds_;
 	IDataParser<WeatherData>& dataParser_;
+	std::vector<std::string> cities_;
 	virtual void Poll() = 0;
 };
 
