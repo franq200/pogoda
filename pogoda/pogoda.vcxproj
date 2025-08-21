@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -118,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,8 +132,10 @@
     <ClCompile Include="HttpPoller.cpp" />
     <ClCompile Include="IDataParser.cpp" />
     <ClCompile Include="IHttpPoller.cpp" />
-    <ClCompile Include="IIniReader.cpp" />
-    <ClCompile Include="IniReader.cpp" />
+    <ClCompile Include="ILogger.cpp" />
+    <ClCompile Include="IWeatherIniReader.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="WeatherIniReader.cpp" />
     <ClCompile Include="JsonDataParser.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -139,8 +143,10 @@
     <ClInclude Include="HttpPoller.h" />
     <ClInclude Include="IDataParser.h" />
     <ClInclude Include="IHttpPoller.h" />
-    <ClInclude Include="IIniReader.h" />
-    <ClInclude Include="IniReader.h" />
+    <ClInclude Include="ILogger.h" />
+    <ClInclude Include="IWeatherIniReader.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="WeatherIniReader.h" />
     <ClInclude Include="JsonDataParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

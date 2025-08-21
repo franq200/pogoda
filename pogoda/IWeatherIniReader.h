@@ -2,10 +2,10 @@
 #include <vector>
 #include <string>
 
-class IIniReader
+class IWeatherIniReader
 {
 public:
-	virtual ~IIniReader() = default;
+	virtual ~IWeatherIniReader() = default;
 	virtual std::vector<std::string> ReadCities(const std::string& filename) const = 0;
 };
 

@@ -14,7 +14,7 @@ struct WeatherData
 class IHttpPoller
 {
 public:
-	IHttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser, std::vector<std::string>& cities);
+	IHttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser, std::vector<std::string>& cities); //weather data i citites nie tutaj
 	virtual ~IHttpPoller() = default;
 protected:
 	std::string url_;

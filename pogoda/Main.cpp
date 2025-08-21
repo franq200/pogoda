@@ -1,7 +1,7 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "IniReader.h"
+#include "WeatherIniReader.h"
 
 struct WeatherData
 {
@@ -60,7 +60,7 @@ int main()
 	}
 	curl_global_cleanup();
 	*/
-	IniReader iniReader;
+	WeatherIniReader iniReader;
 	auto cities = iniReader.ReadCities("../config.ini");
 	for (auto& i : cities)
 	{

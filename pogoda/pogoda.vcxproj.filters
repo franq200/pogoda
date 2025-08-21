@@ -30,10 +30,16 @@
     <ClCompile Include="JsonDataParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IniReader.cpp">
+    <ClCompile Include="WeatherIniReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IIniReader.cpp">
+    <ClCompile Include="IWeatherIniReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ILogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,10 +56,16 @@
     <ClInclude Include="JsonDataParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IniReader.h">
+    <ClInclude Include="WeatherIniReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IIniReader.h">
+    <ClInclude Include="IWeatherIniReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ILogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,5 +30,5 @@ void HttpPoller::Poll()
 		curl_easy_cleanup(curl);
 		response_ = dataParser_.Deserialize(response);
 	}
-	Sleep(intervalSeconds_ * 1000);
+	Sleep(intervalSeconds_ * 1000);//do wyrzucenia, coœ co ma listê pollerow i tam ten czas robiæ
 }
