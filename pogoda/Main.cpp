@@ -1,44 +1,60 @@
 #include <curl/curl.h>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* response) 
+struct WeatherData
+{
+	std::string location;
+	std::string temperature;
+	std::string humidity;
+	std::string windSpeed;
+};
+
+size_t WriteCallbackM(void* contents, size_t size, size_t nmemb, std::string* response) 
 {
 	size_t totalSize = size * nmemb;
 	response->append((char*)contents, totalSize);
 	return totalSize;
 }
 
+void from_json(const nlohmann::json& j, WeatherData& w)
+{
+	w.windSpeed = j.at("current_condition")[0].at("windspeedKmph").get<std::string>();
+	w.temperature = j.at("current_condition")[0].at("temp_C").get<std::string>();
+	w.humidity = j.at("current_condition")[0].at("humidity").get<std::string>();
+	w.location = j.at("nearest_area")[0].at("areaName")[0].at("value").get<std::string>();
+}
+void to_json(nlohmann::json& j, const WeatherData& w)
+{
+	j = nlohmann::json
+	{
+		{"current_condition", nlohmann::json::array({nlohmann::json{
+				{"windspeedKmph", w.windSpeed},
+				{"temp_C", w.temperature},
+				{"humidity", w.humidity}}})},
+		{"nearest_area", nlohmann::json::array({nlohmann::json{
+				{"areaName", nlohmann::json::array({
+					nlohmann::json{{"value", w.location}}})}}})}
+	};
+}
+
 int main()
 {
-	/*
-	CURL* curl;
-	CURLcode res;
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
-	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, "http://api.openweathermap.org/data/2.5/weather?q=London&appid=YOUR_API_KEY");
-		res = curl_easy_perform(curl);
-		if (res != CURLE_OK) {
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-		}
-		curl_easy_cleanup(curl);
-	}
-	curl_global_cleanup();
-	return 0;
-	*/
 	CURL* curl = curl_easy_init();
 	if (curl) 
 	{
 		CURLcode res;
 		std::string response;
 		curl_easy_setopt(curl, CURLOPT_URL, "https://wttr.in/Warsaw?format=j1");
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallbackM);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK)
 			std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
 		curl_easy_cleanup(curl);
-		std::cout << "Response: " << response << "\n";
+		nlohmann::json j = nlohmann::json::parse(response);
+		WeatherData w = j.get<WeatherData>();
+		std::cout << w.location << "\n" << w.temperature << '\n' << w.humidity << '\n' << w.windSpeed;
 	}
 	curl_global_cleanup();
 	return 0;
