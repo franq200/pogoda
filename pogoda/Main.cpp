@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include "Logger.h"
 #include "WeatherIniReader.h"
 
 struct WeatherData
@@ -66,5 +67,8 @@ int main()
 	{
 		std::cout << "City: " << i << "\n";
 	}
+	auto logger = Logger::GetInstance();
+	logger->LogError("Test error message");
+
 	return 0;
 }

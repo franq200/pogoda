@@ -2,25 +2,30 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <iostream>
+#include <filesystem>
 
+std::unique_ptr<Logger> Logger::instance_;
+std::ofstream Logger::logFile_;
 
 Logger::Logger()
 {
-	std::string year, month, day;
 	auto currentTime = std::chrono::system_clock::now();
 	auto currentDate = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(currentTime));
 
-	year = std::to_string(static_cast<int>(currentDate.year()));
-	month = std::to_string(static_cast<unsigned>(currentDate.month()));
-	day = std::to_string(static_cast<unsigned>(currentDate.day()));
+	std::string year = std::to_string(static_cast<int>(currentDate.year()));
+	std::string month = std::to_string(static_cast<unsigned>(currentDate.month()));
+	std::string day = std::to_string(static_cast<unsigned>(currentDate.day()));
+
+	std::string folderPath = "log/" + year + "/" + month + "/" + day;
+	std::filesystem::create_directories(folderPath);
 	
-	std::string filename = "log/" + year + "/" + month + "/" + day + "/" + std::to_string(currentTime.time_since_epoch().count()) + ".txt";// nazwa ma byæ time_s_e
+	std::string filename = folderPath + "/" + std::to_string(currentTime.time_since_epoch().count()) + ".txt";
 	logFile_.open(filename, std::ios::app);
 }
 
 void Logger::Log(const std::string& message, LogLevel logLevel) const
 {
-	//rok miesiac dzien
 	switch (logLevel)
 	{
 	case LogLevel::Error:
