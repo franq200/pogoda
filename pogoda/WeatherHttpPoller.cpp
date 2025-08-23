@@ -1,5 +1,4 @@
-#include "HttpPoller.h"
-#include <Windows.h>
+#include "WeatherHttpPoller.h"
 #include <curl/curl.h>
 #include <iostream>
 
@@ -10,11 +9,12 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* res
 	return totalSize;
 }
 
-HttpPoller::HttpPoller(const std::string& url, int intervalSeconds, IDataParser<WeatherData>& dataParser, std::vector<std::string>& cities) : IHttpPoller(url, intervalSeconds, dataParser, cities)
+WeatherHttpPoller::WeatherHttpPoller(const std::string& url, IDataParser<WeatherData>& dataParser)
+	: IHttpPoller(url), dataParser_(dataParser)
 {
 }
 
-void HttpPoller::Poll()
+void WeatherHttpPoller::Poll()
 {
 	CURL* curl = curl_easy_init();
 	if (curl)
@@ -30,5 +30,4 @@ void HttpPoller::Poll()
 		curl_easy_cleanup(curl);
 		response_ = dataParser_.Deserialize(response);
 	}
-	Sleep(intervalSeconds_ * 1000);//do wyrzucenia, coœ co ma listê pollerow i tam ten czas robiæ
 }

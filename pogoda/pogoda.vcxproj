@@ -129,7 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="HttpPoller.cpp" />
+    <ClCompile Include="WeatherApp.cpp" />
+    <ClCompile Include="WeatherHttpPoller.cpp" />
     <ClCompile Include="IDataParser.cpp" />
     <ClCompile Include="IHttpPoller.cpp" />
     <ClCompile Include="ILogger.cpp" />
@@ -140,7 +141,8 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="HttpPoller.h" />
+    <ClInclude Include="WeatherApp.h" />
+    <ClInclude Include="WeatherHttpPoller.h" />
     <ClInclude Include="IDataParser.h" />
     <ClInclude Include="IHttpPoller.h" />
     <ClInclude Include="ILogger.h" />
