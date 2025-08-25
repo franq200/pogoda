@@ -1,7 +1,10 @@
 #include "WeatherApp.h"
+#include "IWeatherIniReader.h"
+#include "ILogger.h"
+#include "IHttpPoller.h"
 
-WeatherApp::WeatherApp(const std::string& url, IDataParser<WeatherData>& dataParser, int intervalSeconds, std::vector<std::string>& cities)
-	: cities_(cities), intervalSeconds_(intervalSeconds), poller_(url, dataParser)
+WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::unique_ptr<ILogger> logger, int intervalSeconds, std::vector<std::string>& cities)
+	: poller_(std::move(poller)), iniReader_(std::move(iniReader)), logger_(std::move(logger)), intervalSeconds_(intervalSeconds), cities_(cities)
 {
 }
 
