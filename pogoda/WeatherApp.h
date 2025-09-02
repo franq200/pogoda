@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "Timer.h"
 
 class IHttpPoller;
 class IWeatherIniReader;
@@ -14,7 +15,7 @@ public:
 	void Run();
 private:
 	std::vector<std::string> cities_;
-	int intervalSeconds_;
+	Timer timer_;
 	std::unique_ptr<IHttpPoller> poller_;
 	std::unique_ptr<IWeatherIniReader> iniReader_;
 	std::unique_ptr<ILogger> logger_;

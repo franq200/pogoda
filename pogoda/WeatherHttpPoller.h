@@ -14,8 +14,8 @@ class WeatherHttpPoller : public IHttpPoller
 {
 public:
 	WeatherHttpPoller(const std::string& url, IDataParser<WeatherData>& dataParser);
-private:
 	void Poll() override;
+private:
 	WeatherData response_;
 	IDataParser<WeatherData>& dataParser_;
 	std::vector<std::string> cities_;
