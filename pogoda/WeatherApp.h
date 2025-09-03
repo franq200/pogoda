@@ -11,13 +11,13 @@ class ILogger;
 class WeatherApp
 {
 public:
-	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::unique_ptr<ILogger> logger, int intervalSeconds, std::vector<std::string>& cities);
+	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, int intervalSeconds);
 	void Run();
 private:
 	std::vector<std::string> cities_;
 	Timer timer_;
 	std::unique_ptr<IHttpPoller> poller_;
 	std::unique_ptr<IWeatherIniReader> iniReader_;
-	std::unique_ptr<ILogger> logger_;
+	std::shared_ptr<ILogger> logger_;
 };
 

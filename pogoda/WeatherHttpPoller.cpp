@@ -9,8 +9,8 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* res
 	return totalSize;
 }
 
-WeatherHttpPoller::WeatherHttpPoller(const std::string& url, IDataParser<WeatherData>& dataParser)
-	: IHttpPoller(url), dataParser_(dataParser)
+WeatherHttpPoller::WeatherHttpPoller(const std::string& url, std::unique_ptr<IDataParser<WeatherData>> dataParser)
+	: IHttpPoller(url), dataParser_(std::move(dataParser))
 {
 }
 
@@ -28,6 +28,10 @@ void WeatherHttpPoller::Poll()
 		if (res != CURLE_OK)
 			std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n";
 		curl_easy_cleanup(curl);
-		response_ = dataParser_.Deserialize(response);
+		response_ = dataParser_->Deserialize(response);
 	}
+	std::cout << "Location: " << response_.location << "\n"
+			  << "Temperature: " << response_.temperature << "\n"
+			  << "Humidity: " << response_.humidity << "\n"
+			<< "Wind Speed: " << response_.windSpeed << "\n";
 }

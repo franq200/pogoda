@@ -1,5 +1,6 @@
 #pragma once  
 #include <fstream>  
+#include <memory>
 #include "ILogger.h"  
 
 struct CurrentTime
@@ -19,18 +20,18 @@ public:
     Logger(const Logger&) = delete;  
     Logger& operator=(const Logger&) = delete;  
 
-    static Logger* GetInstance()
+    static std::shared_ptr<Logger> GetInstance()
     {
         if (!instance_) 
         {
-            instance_ = std::unique_ptr<Logger>(new Logger());
+            instance_ = std::shared_ptr<Logger>(new Logger());
         }
-        return instance_.get();
+        return instance_;
     }
 private:  
 	CurrentTime GetCurrentTime() const;
     Logger();  
-    static std::unique_ptr<Logger> instance_;  
+    static std::shared_ptr<Logger> instance_;  
     static std::ofstream logFile_;  
 
 protected:  

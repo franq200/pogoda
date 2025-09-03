@@ -5,7 +5,7 @@
 #include <iostream>
 #include <filesystem>
 
-std::unique_ptr<Logger> Logger::instance_;
+std::shared_ptr<Logger> Logger::instance_;
 std::ofstream Logger::logFile_;
 
 CurrentTime Logger::GetCurrentTime() const
