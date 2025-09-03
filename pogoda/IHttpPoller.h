@@ -6,10 +6,8 @@
 class IHttpPoller
 {
 public:
-	IHttpPoller(const std::string& url);
+	IHttpPoller() = default;
 	virtual ~IHttpPoller() = default;
-	virtual void Poll() = 0;
-protected:
-	std::string url_;
+	virtual void Poll(const std::string& url) = 0;
 };
 

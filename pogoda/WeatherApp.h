@@ -14,6 +14,9 @@ public:
 	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, int intervalSeconds);
 	void Run();
 private:
+	void PollAllCities();
+	void BuildUrls();
+	std::vector<std::string> urls_;
 	std::vector<std::string> cities_;
 	Timer timer_;
 	std::unique_ptr<IHttpPoller> poller_;

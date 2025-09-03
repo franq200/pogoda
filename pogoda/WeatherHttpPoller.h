@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <curl/curl.h>
 #include <memory>
 #include "IHttpPoller.h"
 #include "IDataParser.h"
@@ -37,9 +38,11 @@ inline void to_json(nlohmann::json& j, const WeatherData& w)
 class WeatherHttpPoller : public IHttpPoller
 {
 public:
-	WeatherHttpPoller(const std::string& url, std::unique_ptr<IDataParser<WeatherData>> dataParser);
-	void Poll() override;
+	WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser);
+	~WeatherHttpPoller();
+	void Poll(const std::string& url) override;
 private:
+	CURL* curl_;
 	WeatherData response_;
 	std::unique_ptr<IDataParser<WeatherData>> dataParser_;
 };
