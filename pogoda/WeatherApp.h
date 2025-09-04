@@ -18,7 +18,7 @@ private:
 	void BuildUrls();
 	std::vector<std::string> urls_;
 	std::vector<std::string> cities_;
-	Timer timer_;
+	Timer timer_; // te¿ zrobiæ interface
 	std::unique_ptr<IHttpPoller> poller_;
 	std::unique_ptr<IWeatherIniReader> iniReader_;
 	std::shared_ptr<ILogger> logger_;

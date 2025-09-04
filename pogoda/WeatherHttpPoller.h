@@ -1,10 +1,13 @@
 #pragma once
+#include "IHttpPoller.h"
+
 #include <string>
 #include <curl/curl.h>
 #include <memory>
-#include "IHttpPoller.h"
-#include "IDataParser.h"
 #include <nlohmann/json.hpp>
+
+template<typename T>
+class IDataParser;
 
 struct WeatherData
 {
@@ -39,7 +42,7 @@ class WeatherHttpPoller : public IHttpPoller
 {
 public:
 	WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser);
-	~WeatherHttpPoller();
+	~WeatherHttpPoller() override;
 	void Poll(const std::string& url) override;
 private:
 	CURL* curl_;
