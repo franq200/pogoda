@@ -16,6 +16,8 @@ public:
 private:
 	void PollAllCities();
 	void BuildUrls();
+	void LogCities() const;
+
 	std::vector<std::string> urls_;
 	std::vector<std::string> cities_;
 	Timer timer_; // te¿ zrobiæ interface

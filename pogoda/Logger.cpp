@@ -8,6 +8,15 @@
 std::shared_ptr<Logger> Logger::instance_;
 std::ofstream Logger::logFile_;
 
+Logger::~Logger()
+{
+	if (logFile_.is_open())
+	{
+		LogInfo("Logging ended.");
+		logFile_.close();
+	}
+}
+
 CurrentTime Logger::GetCurrentTime() const
 {
 	CurrentTime currentTime;
@@ -33,6 +42,8 @@ Logger::Logger()
 	
 	std::string filename = folderPath + "/" + currentTime.timeSinceEpoch + ".txt";
 	logFile_.open(filename, std::ios::app);
+
+	LogInfo("Logging started...");
 }
 
 void Logger::Log(const std::string& message, LogLevel logLevel) const
@@ -40,16 +51,16 @@ void Logger::Log(const std::string& message, LogLevel logLevel) const
 	switch (logLevel)
 	{
 	case LogLevel::Error:
-		std::cerr << "ERROR: " << message << std::endl;
+		logFile_ << "[E]" << message << std::endl; // current time rok miesi¹c dzieñ godzina minuta sekunda milisekunda
 		break;
 	case LogLevel::Warning:
-		std::cerr << "WARNING: " << message << std::endl;
+		logFile_ << "[W] " << message << std::endl;
 		break;
 	case LogLevel::Info:
-		std::cout << "INFO: " << message << std::endl;
+		logFile_ << "[I]" << message << std::endl;
 		break;
 	default:
-		std::cerr << "UNKNOWN LOG LEVEL: " << message << std::endl;
+		logFile_ << "UNKNOWN LOG LEVEL: " << message << std::endl;
 		break;
 	}
 }
