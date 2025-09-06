@@ -15,7 +15,7 @@ void WeatherApp::Run()
 {
 	while (true)
 	{
-		if (timer_.ShouldTick()) // timer po starcie powinien od razu zwróciæ true
+		if (timer_.ShouldTick())
 		{
 			PollAllCities();
 		}
