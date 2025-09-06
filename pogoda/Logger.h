@@ -17,6 +17,7 @@ struct CurrentTime
 class Logger : public ILogger  
 {  
 public:  
+    ~Logger() override;
     Logger(const Logger&) = delete;  
     Logger& operator=(const Logger&) = delete;  
 
