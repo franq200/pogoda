@@ -8,6 +8,8 @@ public:
 	void LogError(const std::string& message) const;
 	void LogWarning(const std::string& message) const;
 	void LogInfo(const std::string& message) const;
+
+	[[noreturn]] void LogCriticalError(const std::string& message) const;
 protected:
 	enum class LogLevel
 	{

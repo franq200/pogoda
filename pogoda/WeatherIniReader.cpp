@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-std::vector<std::string> WeatherIniReader::ReadCities(const std::string& filename) const
+std::vector<std::string> WeatherIniReader::ReadCities(const std::string& filename) const //zrobiæ konstruktor ¿êby nie otwieraæ ini kilka razy dla ró¿nych zmiennych typu cities frequency 
 {
 	INIReader reader(filename);
 	if (reader.ParseError() < 0) 
