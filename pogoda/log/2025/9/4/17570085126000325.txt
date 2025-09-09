@@ -1,5 +1,0 @@
-[I]Logging started...
-[I]Wczytano miasta do monitorowania:
-[I] - Warsaw
-[I] - Paris
-[I] - NewYork

@@ -11,6 +11,7 @@ struct CurrentTime
     std::string hour;
     std::string minute;
     std::string second;
+    std::string millisecond;
     std::string timeSinceEpoch;
 };
 
@@ -31,6 +32,7 @@ public:
     }
 private:  
 	CurrentTime GetCurrentTime() const; // nie pasuje do Logger
+	std::string GetCurrentTimeString() const; // nie pasuje do Logger
     Logger();  
     static std::shared_ptr<Logger> instance_;  
     static std::ofstream logFile_;  

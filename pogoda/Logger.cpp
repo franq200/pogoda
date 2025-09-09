@@ -29,8 +29,16 @@ CurrentTime Logger::GetCurrentTime() const
 	currentTime.hour = std::to_string(std::chrono::time_point_cast<std::chrono::hours>(currentTimeChrono).time_since_epoch().count() % 24);
 	currentTime.minute = std::to_string(std::chrono::time_point_cast<std::chrono::minutes>(currentTimeChrono).time_since_epoch().count() % 60);
 	currentTime.second = std::to_string(std::chrono::time_point_cast<std::chrono::seconds>(currentTimeChrono).time_since_epoch().count() % 60);
+	currentTime.millisecond = std::to_string(std::chrono::time_point_cast<std::chrono::milliseconds>(currentTimeChrono).time_since_epoch().count());
 	currentTime.timeSinceEpoch = std::to_string(currentTimeChrono.time_since_epoch().count());
 	return currentTime;
+}
+
+std::string Logger::GetCurrentTimeString() const
+{
+	CurrentTime currentTime = GetCurrentTime();
+	return currentTime.year + "-" + currentTime.month + "-" + currentTime.day + " " +
+		currentTime.hour + ":" + currentTime.minute + ":" + currentTime.second + "." + currentTime.millisecond;
 }
 
 Logger::Logger()
@@ -48,19 +56,20 @@ Logger::Logger()
 
 void Logger::Log(const std::string& message, LogLevel logLevel) const
 {
+	std::string currentTimeString = GetCurrentTimeString();
 	switch (logLevel)
 	{
 	case LogLevel::Error:
-		logFile_ << "[E]" << message << std::endl; // current time rok miesi¹c dzieñ godzina minuta sekunda milisekunda
+		logFile_ << "[E] " << currentTimeString << ": " << message << std::endl;
 		break;
 	case LogLevel::Warning:
-		logFile_ << "[W] " << message << std::endl;
+		logFile_ << "[W] " << currentTimeString << ": " << message << std::endl;
 		break;
 	case LogLevel::Info:
-		logFile_ << "[I]" << message << std::endl;
+		logFile_ << "[I] " << currentTimeString << ": " << message << std::endl;
 		break;
 	default:
-		logFile_ << "UNKNOWN LOG LEVEL: " << message << std::endl;
+		logFile_ << "UNKNOWN LOG LEVEL: " << currentTimeString << ": " << message << std::endl;
 		break;
 	}
 }
