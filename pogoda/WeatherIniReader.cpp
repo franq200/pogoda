@@ -1,19 +1,20 @@
 #include "WeatherIniReader.h"
-#include <INIReader.h>
 #include <iostream>
 #include <sstream>
 
-std::vector<std::string> WeatherIniReader::ReadCities(const std::string& filename) const //zrobiæ konstruktor ¿êby nie otwieraæ ini kilka razy dla ró¿nych zmiennych typu cities frequency 
+WeatherIniReader::WeatherIniReader(const std::string& path):
+	reader_(path)
 {
-	INIReader reader(filename);
-	if (reader.ParseError() < 0) 
+	if (reader_.ParseError() < 0) 
 	{
-		std::cerr << "Nie mogê wczytaæ pliku " << filename << "\n";
-		return {};
+		std::cerr << "Nie mogê wczytaæ pliku " << path << "\n";
 	}
+}
 
+std::vector<std::string> WeatherIniReader::ReadCities() const
+{
 	std::vector<std::string> cities;
-	std::string rawCities =	reader.GetString("", "city", "");
+	std::string rawCities =	reader_.GetString("", "city", "");
 	std::string city;
 	std::istringstream ssCities(rawCities);
 	while (std::getline(ssCities, city, '\n'))

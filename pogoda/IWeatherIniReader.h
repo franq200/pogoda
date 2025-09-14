@@ -6,6 +6,6 @@ class IWeatherIniReader
 {
 public:
 	virtual ~IWeatherIniReader() = default;
-	virtual std::vector<std::string> ReadCities(const std::string& filename) const = 0;
+	virtual std::vector<std::string> ReadCities() const = 0;
 };
 
