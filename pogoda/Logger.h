@@ -30,9 +30,7 @@ public:
         }
         return instance_;
     }
-private:  
-	CurrentTime GetCurrentTime() const; // nie pasuje do Logger
-	std::string GetCurrentTimeString() const; // nie pasuje do Logger
+private:
     Logger();  
     static std::shared_ptr<Logger> instance_;  
     static std::ofstream logFile_;  
