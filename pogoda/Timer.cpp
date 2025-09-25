@@ -1,7 +1,8 @@
 #include "Timer.h"
 
-Timer::Timer(int intervalSeconds):
-	interval_(std::chrono::duration<double>(intervalSeconds)), lastTick_(std::chrono::steady_clock::now())
+Timer::Timer(uint64_t intervalSeconds):
+	interval_(std::chrono::seconds(intervalSeconds)),
+	lastTick_(std::chrono::steady_clock::now() - interval_)
 {
 }
 

@@ -11,12 +11,14 @@ struct CurrentTime
     std::string hour;
     std::string minute;
     std::string second;
-    std::string timeSinceEpoch;
+    std::string millisecond;
+    std::string millisecondsSinceEpoch;
 };
 
 class Logger : public ILogger  
 {  
 public:  
+    ~Logger() override;
     Logger(const Logger&) = delete;  
     Logger& operator=(const Logger&) = delete;  
 
@@ -28,12 +30,13 @@ public:
         }
         return instance_;
     }
-private:  
-	CurrentTime GetCurrentTime() const; // nie pasuje do Logger
+private:
     Logger();  
+	void CreateLogFile();
     static std::shared_ptr<Logger> instance_;  
     static std::ofstream logFile_;  
+	CurrentTime LastLogTime_;
 
 protected:  
-    void Log(const std::string& message, LogLevel logLevel) const override;  
+    void Log(const std::string& message, LogLevel logLevel) override;  
 };

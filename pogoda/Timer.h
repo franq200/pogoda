@@ -1,13 +1,15 @@
 #pragma once
 #include <chrono>
 
-class Timer
+#include "ITimer.h"
+
+class Timer : public ITimer
 {
 public:
-	Timer(int intervalSeconds);
-	bool ShouldTick();
+	Timer(uint64_t intervalSeconds);
+	bool ShouldTick() override;
 private:
-	std::chrono::duration<double> interval_;
+	std::chrono::steady_clock::duration interval_;
 	std::chrono::steady_clock::time_point lastTick_;
 };
 

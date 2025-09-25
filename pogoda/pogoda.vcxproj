@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ITimer.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WeatherApp.cpp" />
     <ClCompile Include="WeatherHttpPoller.cpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ITimer.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WeatherApp.h" />
     <ClInclude Include="WeatherHttpPoller.h" />
