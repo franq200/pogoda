@@ -1,5 +1,0 @@
-[I] 2025-9-14 17:17:25.1757870245761: Logging started...
-[I] 2025-9-14 17:17:25.1757870245769: Wczytano miasta do monitorowania:
- - Warsaw
- - Paris
- - NewYork
