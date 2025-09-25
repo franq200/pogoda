@@ -15,9 +15,9 @@ namespace {
 		auto currentTimeChrono = std::chrono::system_clock::now();
 		auto currentDateChrono = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(currentTimeChrono));
 
-		currentTime.year = std::to_string((int)currentDateChrono.year());
-		currentTime.month = std::to_string((unsigned)currentDateChrono.month());
-		currentTime.day = std::to_string((unsigned)currentDateChrono.day());
+		currentTime.year = std::to_string(static_cast<int>(currentDateChrono.year()));
+		currentTime.month = std::to_string(static_cast<unsigned int>(currentDateChrono.month()));
+		currentTime.day = std::to_string(static_cast<unsigned int>(currentDateChrono.day()));
 		currentTime.hour = std::to_string(std::chrono::time_point_cast<std::chrono::hours>(currentTimeChrono).time_since_epoch().count() % 24);
 		currentTime.minute = std::to_string(std::chrono::time_point_cast<std::chrono::minutes>(currentTimeChrono).time_since_epoch().count() % 60);
 		currentTime.second = std::to_string(std::chrono::time_point_cast<std::chrono::seconds>(currentTimeChrono).time_since_epoch().count() % 60);
@@ -26,7 +26,7 @@ namespace {
 		currentTime.millisecond = std::to_string(ms%1000);
 		currentTime.millisecondsSinceEpoch = std::to_string(ms);
 		return currentTime;
-	};
+	}; // dodac funkcje get current day/month/year/second...
 
 	std::string GetCurrentTimeString()
 	{
@@ -52,6 +52,7 @@ Logger::Logger()
 
 void Logger::CreateLogFile()
 {
+	LastLogTime_ = GetCurrentTime();
 	if (logFile_.is_open())
 	{
 		logFile_.close();
@@ -87,5 +88,4 @@ void Logger::Log(const std::string& message, LogLevel logLevel)
 		logFile_ << "UNKNOWN LOG LEVEL: " << currentTimeString << ": " << message << std::endl;
 		break;
 	}
-	LastLogTime_ = GetCurrentTime();
 }
