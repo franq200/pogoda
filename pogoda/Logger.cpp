@@ -15,14 +15,16 @@ namespace {
 		auto currentTimeChrono = std::chrono::system_clock::now();
 		auto currentDateChrono = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(currentTimeChrono));
 
-		currentTime.year = std::to_string(static_cast<int>(currentDateChrono.year()));
-		currentTime.month = std::to_string(static_cast<unsigned>(currentDateChrono.month()));
-		currentTime.day = std::to_string(static_cast<unsigned>(currentDateChrono.day()));
+		currentTime.year = std::to_string((int)currentDateChrono.year());
+		currentTime.month = std::to_string((unsigned)currentDateChrono.month());
+		currentTime.day = std::to_string((unsigned)currentDateChrono.day());
 		currentTime.hour = std::to_string(std::chrono::time_point_cast<std::chrono::hours>(currentTimeChrono).time_since_epoch().count() % 24);
 		currentTime.minute = std::to_string(std::chrono::time_point_cast<std::chrono::minutes>(currentTimeChrono).time_since_epoch().count() % 60);
 		currentTime.second = std::to_string(std::chrono::time_point_cast<std::chrono::seconds>(currentTimeChrono).time_since_epoch().count() % 60);
-		currentTime.millisecond = std::to_string(std::chrono::time_point_cast<std::chrono::milliseconds>(currentTimeChrono).time_since_epoch().count());
-		currentTime.timeSinceEpoch = std::to_string(currentTimeChrono.time_since_epoch().count());
+
+		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(currentTimeChrono.time_since_epoch()).count();
+		currentTime.millisecond = std::to_string(ms%1000);
+		currentTime.millisecondsSinceEpoch = std::to_string(ms);
 		return currentTime;
 	};
 
@@ -45,19 +47,30 @@ Logger::~Logger()
 
 Logger::Logger()
 {
-	CurrentTime currentTime = GetCurrentTime();
+	CreateLogFile();
+}
 
+void Logger::CreateLogFile()
+{
+	if (logFile_.is_open())
+	{
+		logFile_.close();
+	}
+	CurrentTime currentTime = GetCurrentTime();
 	std::string folderPath = "log/" + currentTime.year + "/" + currentTime.month + "/" + currentTime.day;
 	std::filesystem::create_directories(folderPath);
-	
-	std::string filename = folderPath + "/" + currentTime.timeSinceEpoch + ".txt";
+	std::string filename = folderPath + "/" + currentTime.millisecondsSinceEpoch + ".txt";
 	logFile_.open(filename, std::ios::app);
-
 	LogInfo("Logging started...");
 }
 
-void Logger::Log(const std::string& message, LogLevel logLevel) const
+void Logger::Log(const std::string& message, LogLevel logLevel)
 {
+	if (LastLogTime_.day != GetCurrentTime().day)
+	{
+		CreateLogFile();
+	}
+
 	std::string currentTimeString = GetCurrentTimeString();
 	switch (logLevel)
 	{
@@ -74,4 +87,5 @@ void Logger::Log(const std::string& message, LogLevel logLevel) const
 		logFile_ << "UNKNOWN LOG LEVEL: " << currentTimeString << ": " << message << std::endl;
 		break;
 	}
+	LastLogTime_ = GetCurrentTime();
 }

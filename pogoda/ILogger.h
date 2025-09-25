@@ -5,11 +5,11 @@ class ILogger
 {
 public:
 	virtual ~ILogger() = default;
-	void LogError(const std::string& message) const;
-	void LogWarning(const std::string& message) const;
-	void LogInfo(const std::string& message) const;
+	void LogError(const std::string& message);
+	void LogWarning(const std::string& message);
+	void LogInfo(const std::string& message);
 
-	[[noreturn]] void LogCriticalError(const std::string& message) const;
+	[[noreturn]] void LogCriticalError(const std::string& message);
 protected:
 	enum class LogLevel
 	{
@@ -17,6 +17,6 @@ protected:
 		Warning,
 		Info
 	};
-	virtual void Log(const std::string& message, LogLevel logLevel) const = 0;
+	virtual void Log(const std::string& message, LogLevel logLevel) = 0;
 };
 

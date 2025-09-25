@@ -12,7 +12,7 @@ struct CurrentTime
     std::string minute;
     std::string second;
     std::string millisecond;
-    std::string timeSinceEpoch;
+    std::string millisecondsSinceEpoch;
 };
 
 class Logger : public ILogger  
@@ -32,9 +32,11 @@ public:
     }
 private:
     Logger();  
+	void CreateLogFile();
     static std::shared_ptr<Logger> instance_;  
     static std::ofstream logFile_;  
+	CurrentTime LastLogTime_;
 
 protected:  
-    void Log(const std::string& message, LogLevel logLevel) const override;  
+    void Log(const std::string& message, LogLevel logLevel) override;  
 };
