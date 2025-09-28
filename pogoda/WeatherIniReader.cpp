@@ -1,13 +1,15 @@
 #include "WeatherIniReader.h"
 #include <iostream>
 #include <sstream>
+#include "Logger.h"
 
 WeatherIniReader::WeatherIniReader(const std::string& path):
 	reader_(path)
 {
 	if (reader_.ParseError() < 0) 
 	{
-		std::cerr << "Nie mogê wczytaæ pliku " << path << "\n";
+		auto logger = Logger::GetInstance();
+		logger->LogCriticalError("Nie mogê wczytaæ pliku " + path);
 	}
 }
 
