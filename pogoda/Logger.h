@@ -1,19 +1,10 @@
 #pragma once  
 #include <fstream>  
 #include <memory>
-#include "ILogger.h"  
+#include "ILogger.h"
+#include "TimeProvider.h"
 
-struct CurrentTime
-{
-    std::string year;
-    std::string month;
-    std::string day;
-    std::string hour;
-    std::string minute;
-    std::string second;
-    std::string millisecond;
-    std::string millisecondsSinceEpoch;
-};
+class ITimeProvider;
 
 class Logger : public ILogger  
 {  
@@ -30,12 +21,14 @@ public:
         }
         return instance_;
     }
+
 private:
     Logger();  
 	void CreateLogFile();
-    static std::shared_ptr<Logger> instance_;  
-    static std::ofstream logFile_;  
-	CurrentTime LastLogTime_;
+    static std::shared_ptr<Logger> instance_;
+    static std::ofstream logFile_;
+	std::string LastLogTime_;
+	TimeProvider timeProvider_;
 
 protected:  
     void Log(const std::string& message, LogLevel logLevel) override;  
