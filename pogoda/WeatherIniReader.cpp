@@ -9,7 +9,7 @@ WeatherIniReader::WeatherIniReader(const std::string& path):
 	if (reader_.ParseError() < 0) 
 	{
 		auto logger = Logger::GetInstance();
-		logger->LogCriticalError("Nie mogê wczytaæ pliku " + path);
+		logger->LogCriticalError("Nie mogê wczytaæ pliku " + path); // Log critical error if file cannot be read
 	}
 }
 

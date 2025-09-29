@@ -8,7 +8,7 @@ WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWea
 	: poller_(std::move(poller)), iniReader_(std::move(iniReader)), logger_(std::move(logger)), timer_(std::move(timer))
 {
 	cities_ = iniReader_->ReadCities();
-	LogCities();
+	LogCities(); // Log loaded cities
 	BuildUrls();
 }
 

@@ -18,6 +18,22 @@ Logger::~Logger()
 	}
 }
 
+void Logger::LogCollectedLogs()
+{
+	for (const auto& log : collectedLogs_)
+	{
+		if (logFile_.is_open())
+		{
+			logFile_ << log << std::endl;
+		}
+		else
+		{
+			std::cerr << "Log file is not open. Cannot write log: " << log << std::endl;
+		}
+	}
+	collectedLogs_.clear();
+}
+
 Logger::Logger()
 {
 	CreateLogFile();
@@ -49,16 +65,16 @@ void Logger::Log(const std::string& message, LogLevel logLevel)
 	switch (logLevel)
 	{
 	case LogLevel::Error:
-		logFile_ << "[E] " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("[E] " + currentTimeString + ": " + message);
 		break;
 	case LogLevel::Warning:
-		logFile_ << "[W] " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("[W] " + currentTimeString + ": " + message);
 		break;
 	case LogLevel::Info:
-		logFile_ << "[I] " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("[I] " + currentTimeString + ": " + message);
 		break;
 	default:
-		logFile_ << "UNKNOWN LOG LEVEL: " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("UNKNOWN LOG LEVEL: " + currentTimeString + ": " + message);
 		break;
 	}
 }
