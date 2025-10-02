@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "ITask.h"
 
 class ITimer;
 class IHttpPoller;
@@ -11,18 +12,20 @@ class ILogger;
 class WeatherApp
 {
 public:
-	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<ITimer> timer);
+	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger);
+	~WeatherApp();
 	void Run();
+	void OnExit();
 private:
-	void PollAllCities();
-	void BuildUrls();
+	void StartTasks();
+	std::vector < std::string> GetUrls();
 	void LogCities() const;
 
-	std::vector<std::string> urls_;
 	std::vector<std::string> cities_;
-	std::unique_ptr<ITimer> timer_;
 	std::unique_ptr<IHttpPoller> poller_;
 	std::unique_ptr<IWeatherIniReader> iniReader_;
 	std::shared_ptr<ILogger> logger_;
+	std::vector<std::unique_ptr<ITask>> tasks_;
+	bool keepRunning_ = true;
 };
 

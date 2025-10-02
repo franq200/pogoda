@@ -129,7 +129,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ITask.cpp" />
     <ClCompile Include="ITimer.cpp" />
+    <ClCompile Include="LoggingTask.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WeatherApp.cpp" />
     <ClCompile Include="WeatherHttpPoller.cpp" />
@@ -141,9 +143,12 @@
     <ClCompile Include="WeatherIniReader.cpp" />
     <ClCompile Include="JsonDataParser.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="WeatherTask.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ITask.h" />
     <ClInclude Include="ITimer.h" />
+    <ClInclude Include="LoggingTask.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WeatherApp.h" />
     <ClInclude Include="WeatherHttpPoller.h" />
@@ -154,6 +159,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="WeatherIniReader.h" />
     <ClInclude Include="JsonDataParser.h" />
+    <ClInclude Include="WeatherTask.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
