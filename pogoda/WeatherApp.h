@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 
+class ITimer;
 class IHttpPoller;
 class IWeatherIniReader;
 class ILogger;
