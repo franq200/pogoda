@@ -51,9 +51,6 @@
     <ClCompile Include="ITimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ITimeProvider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TimeProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -90,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ITimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ITimeProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TimeProvider.h">

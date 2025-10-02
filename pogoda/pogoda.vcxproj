@@ -129,7 +129,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ITimeProvider.cpp" />
     <ClCompile Include="ITimer.cpp" />
     <ClCompile Include="TimeProvider.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -145,7 +144,6 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ITimeProvider.h" />
     <ClInclude Include="ITimer.h" />
     <ClInclude Include="TimeProvider.h" />
     <ClInclude Include="Timer.h" />
