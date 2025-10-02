@@ -13,7 +13,7 @@ public:
     ~Logger() override;
     Logger(const Logger&) = delete;  
     Logger& operator=(const Logger&) = delete;
-	void LogCollectedLogs();
+	void LogCollectedLogs() override;
 
     static std::shared_ptr<Logger> GetInstance()
     {

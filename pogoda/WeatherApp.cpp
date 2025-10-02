@@ -19,6 +19,7 @@ void WeatherApp::Run()
 		if (timer_->ShouldTick())
 		{
 			PollAllCities();
+			logger_->LogCollectedLogs();
 		}
 	}
 }
