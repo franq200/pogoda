@@ -1,5 +1,6 @@
 #include "WeatherHttpPoller.h"
 #include "IDataParser.h"
+#include "Logger.h"
 #include <iostream>
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* response)
@@ -30,6 +31,7 @@ WeatherHttpPoller::~WeatherHttpPoller()
 
 void WeatherHttpPoller::Poll(const std::string& url)
 {
+	auto logger = Logger::GetInstance();
 	std::string response;
 	curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
 	curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
@@ -37,12 +39,17 @@ void WeatherHttpPoller::Poll(const std::string& url)
 	CURLcode res = curl_easy_perform(curl_);
 	if (res != CURLE_OK)
 	{
-		std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << "\n"; //logowaæ
+		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res))); // Log the error
 		return;
 	}
 	response_ = dataParser_->Deserialize(response);
 
-	std::cout << "Location: " << response_.location << "\n" // logowaæ ¿e siê uda³o i do bazy danych
+	logger->LogInfo("Location: " + response_.location + // Log the location
+		"Temperature: " + response_.temperature +
+		"Humidity: " + response_.humidity + 
+		"Wind Speed: " + response_.windSpeed);
+
+	std::cerr<< "Location: " << response_.location << "\n"
 			  << "Temperature: " << response_.temperature << "\n"
 			  << "Humidity: " << response_.humidity << "\n"
 			<< "Wind Speed: " << response_.windSpeed << "\n\n";

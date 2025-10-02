@@ -2,12 +2,13 @@
 #include "IWeatherIniReader.h"
 #include "ILogger.h"
 #include "IHttpPoller.h"
+#include "ITimer.h"
 
 WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<ITimer> timer)
 	: poller_(std::move(poller)), iniReader_(std::move(iniReader)), logger_(std::move(logger)), timer_(std::move(timer))
 {
 	cities_ = iniReader_->ReadCities();
-	LogCities();
+	LogCities(); // Log loaded cities
 	BuildUrls();
 }
 
@@ -15,9 +16,10 @@ void WeatherApp::Run()
 {
 	while (true)
 	{
-		//if (timer_->ShouldTick())
+		if (timer_->ShouldTick())
 		{
 			PollAllCities();
+			logger_->LogCollectedLogs();
 		}
 	}
 }

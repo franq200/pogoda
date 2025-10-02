@@ -8,6 +8,7 @@ public:
 	void LogError(const std::string& message);
 	void LogWarning(const std::string& message);
 	void LogInfo(const std::string& message);
+	virtual void LogCollectedLogs() = 0;
 
 	[[noreturn]] void LogCriticalError(const std::string& message);
 protected:
