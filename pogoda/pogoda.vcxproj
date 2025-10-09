@@ -133,7 +133,6 @@
     <ClCompile Include="ITimer.cpp" />
     <ClCompile Include="LoggingTask.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="ITimeProvider.cpp" />
     <ClCompile Include="TimeProvider.cpp" />
     <ClCompile Include="WeatherApp.cpp" />
     <ClCompile Include="WeatherHttpPoller.cpp" />
@@ -152,7 +151,6 @@
     <ClInclude Include="ITimer.h" />
     <ClInclude Include="LoggingTask.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="ITimeProvider.h" />
     <ClInclude Include="TimeProvider.h" />
     <ClInclude Include="WeatherApp.h" />
     <ClInclude Include="WeatherHttpPoller.h" />

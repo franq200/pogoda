@@ -1,23 +1,30 @@
 #pragma once
 #include <chrono>
-#include "ITimeProvider.h"
+#include <string>
 
-class TimeProvider : public ITimeProvider
+struct CurrentTime
+{
+	std::string year;
+	std::string month;
+	std::string day;
+	std::string hour;
+	std::string minute;
+	std::string second;
+	std::string millisecond;
+	std::string millisecondsSinceEpoch;
+};
+
+class TimeProvider
 {
 public:
-	~TimeProvider() override = default;
-	CurrentTime GetCurrentTime() override;
-	std::string GetCurrentTimeString() override;
-	std::string GetCurrentDay() override;
-	std::string GetCurrentMonth() override;
-	std::string GetCurrentYear() override;
-	std::string GetCurrentHour() override;
-	std::string GetCurrentMinute() override;
-	std::string GetCurrentSecond() override;
-	uint64_t GetMillisecondsSinceEpoch() override;
-private:
-	CurrentTime currentTime_;
-	std::chrono::system_clock::time_point currentTimeChrono_;
-	std::chrono::year_month_day currentDateChrono_;
+	static CurrentTime GetCurrentTime();
+	static std::string GetCurrentTimeString();
+	static std::string GetCurrentDay();
+	static std::string GetCurrentMonth();
+	static std::string GetCurrentYear();
+	static std::string GetCurrentHour();
+	static std::string GetCurrentMinute();
+	static std::string GetCurrentSecond();
+	static uint64_t GetMillisecondsSinceEpoch();
 };
 

@@ -41,12 +41,12 @@ Logger::Logger()
 
 void Logger::CreateLogFile()
 {
-	LastLogTime_ = timeProvider_.GetCurrentDay();
+	LastLogTime_ = TimeProvider::GetCurrentDay();
 	if (logFile_.is_open())
 	{
 		logFile_.close();
 	}
-	CurrentTime currentTime = timeProvider_.GetCurrentTime();
+	CurrentTime currentTime = TimeProvider::GetCurrentTime();
 	std::string folderPath = "log/" + currentTime.year + "/" + currentTime.month + "/" + currentTime.day;
 	std::filesystem::create_directories(folderPath);
 	std::string filename = folderPath + "/" + currentTime.millisecondsSinceEpoch + ".txt";
@@ -56,12 +56,12 @@ void Logger::CreateLogFile()
 
 void Logger::Log(const std::string& message, LogLevel logLevel)
 {
-	if (LastLogTime_ != timeProvider_.GetCurrentDay())
+	if (LastLogTime_ != TimeProvider::GetCurrentDay())
 	{
 		CreateLogFile();
 	}
 
-	std::string currentTimeString = timeProvider_.GetCurrentTimeString();
+	std::string currentTimeString = TimeProvider::GetCurrentTimeString();
 	switch (logLevel)
 	{
 	case LogLevel::Error:

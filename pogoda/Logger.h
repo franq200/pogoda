@@ -3,9 +3,6 @@
 #include <memory>
 #include <vector>
 #include "ILogger.h"
-#include "TimeProvider.h"
-
-class ITimeProvider;
 
 class Logger : public ILogger  
 {  
@@ -30,7 +27,6 @@ private:
     static std::shared_ptr<Logger> instance_;
     static std::ofstream logFile_;
 	std::string LastLogTime_;
-	TimeProvider timeProvider_;
     std::vector<std::string> collectedLogs_;
 protected:  
     void Log(const std::string& message, LogLevel logLevel) override;  
