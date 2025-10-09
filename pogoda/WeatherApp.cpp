@@ -3,6 +3,7 @@
 #include "ILogger.h"
 #include "IHttpPoller.h"
 #include "Timer.h"
+#include "ITimer.h"
 #include "ITask.h"
 #include "LoggingTask.h"
 #include "WeatherTask.h"

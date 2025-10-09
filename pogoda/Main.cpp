@@ -6,6 +6,7 @@
 #include "WeatherIniReader.h"
 #include "Logger.h"
 #include "JsonDataParser.h"
+#include "Timer.h"
 
 void OnExit(int signum)
 {

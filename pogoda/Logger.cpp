@@ -1,40 +1,13 @@
-#include "Logger.h"
 #include <iostream>
 #include <string>
 #include <chrono>
 #include <iostream>
 #include <filesystem>
+#include "TimeProvider.h"
+#include "Logger.h"
 
 std::shared_ptr<Logger> Logger::instance_;
 std::ofstream Logger::logFile_;
-
-namespace {
-	CurrentTime GetCurrentTime()
-	{
-		CurrentTime currentTime;
-		auto currentTimeChrono = std::chrono::system_clock::now();
-		auto currentDateChrono = std::chrono::year_month_day(std::chrono::floor<std::chrono::days>(currentTimeChrono));
-
-		currentTime.year = std::to_string(static_cast<int>(currentDateChrono.year()));
-		currentTime.month = std::to_string(static_cast<unsigned int>(currentDateChrono.month()));
-		currentTime.day = std::to_string(static_cast<unsigned int>(currentDateChrono.day()));
-		currentTime.hour = std::to_string(std::chrono::time_point_cast<std::chrono::hours>(currentTimeChrono).time_since_epoch().count() % 24);
-		currentTime.minute = std::to_string(std::chrono::time_point_cast<std::chrono::minutes>(currentTimeChrono).time_since_epoch().count() % 60);
-		currentTime.second = std::to_string(std::chrono::time_point_cast<std::chrono::seconds>(currentTimeChrono).time_since_epoch().count() % 60);
-
-		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(currentTimeChrono.time_since_epoch()).count();
-		currentTime.millisecond = std::to_string(ms%1000);
-		currentTime.millisecondsSinceEpoch = std::to_string(ms);
-		return currentTime;
-	}; // dodac funkcje get current day/month/year/second...
-
-	std::string GetCurrentTimeString()
-	{
-		CurrentTime currentTime = GetCurrentTime();
-		return currentTime.year + "-" + currentTime.month + "-" + currentTime.day + " " +
-			currentTime.hour + ":" + currentTime.minute + ":" + currentTime.second + "." + currentTime.millisecond;
-	};
-}
 
 Logger::~Logger()
 {
@@ -45,6 +18,22 @@ Logger::~Logger()
 	}
 }
 
+void Logger::LogCollectedLogs()
+{
+	for (const auto& log : collectedLogs_)
+	{
+		if (logFile_.is_open())
+		{
+			logFile_ << log << std::endl;
+		}
+		else
+		{
+			std::cerr << "Log file is not open. Cannot write log: " << log << std::endl;
+		}
+	}
+	collectedLogs_.clear();
+}
+
 Logger::Logger()
 {
 	CreateLogFile();
@@ -52,12 +41,12 @@ Logger::Logger()
 
 void Logger::CreateLogFile()
 {
-	LastLogTime_ = GetCurrentTime();
+	LastLogTime_ = timeProvider_.GetCurrentDay();
 	if (logFile_.is_open())
 	{
 		logFile_.close();
 	}
-	CurrentTime currentTime = GetCurrentTime();
+	CurrentTime currentTime = timeProvider_.GetCurrentTime();
 	std::string folderPath = "log/" + currentTime.year + "/" + currentTime.month + "/" + currentTime.day;
 	std::filesystem::create_directories(folderPath);
 	std::string filename = folderPath + "/" + currentTime.millisecondsSinceEpoch + ".txt";
@@ -67,25 +56,25 @@ void Logger::CreateLogFile()
 
 void Logger::Log(const std::string& message, LogLevel logLevel)
 {
-	if (LastLogTime_.day != GetCurrentTime().day)
+	if (LastLogTime_ != timeProvider_.GetCurrentDay())
 	{
 		CreateLogFile();
 	}
 
-	std::string currentTimeString = GetCurrentTimeString();
+	std::string currentTimeString = timeProvider_.GetCurrentTimeString();
 	switch (logLevel)
 	{
 	case LogLevel::Error:
-		logFile_ << "[E] " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("[E] " + currentTimeString + ": " + message);
 		break;
 	case LogLevel::Warning:
-		logFile_ << "[W] " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("[W] " + currentTimeString + ": " + message);
 		break;
 	case LogLevel::Info:
-		logFile_ << "[I] " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("[I] " + currentTimeString + ": " + message);
 		break;
 	default:
-		logFile_ << "UNKNOWN LOG LEVEL: " << currentTimeString << ": " << message << std::endl;
+		collectedLogs_.push_back("UNKNOWN LOG LEVEL: " + currentTimeString + ": " + message);
 		break;
 	}
 }
