@@ -39,12 +39,12 @@ void WeatherHttpPoller::Poll(const std::string& url)
 	CURLcode res = curl_easy_perform(curl_);
 	if (res != CURLE_OK)
 	{
-		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res))); // Log the error
+		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
 		return;
 	}
 	response_ = dataParser_->Deserialize(response);
 
-	logger->LogInfo("Location: " + response_.location + // Log the location
+	logger->LogInfo("Location: " + response_.location +
 		"Temperature: " + response_.temperature +
 		"Humidity: " + response_.humidity + 
 		"Wind Speed: " + response_.windSpeed);

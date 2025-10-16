@@ -8,12 +8,12 @@
 #include "LoggingTask.h"
 #include "WeatherTask.h"
 
-WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger)
+WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
 	: iniReader_(std::move(iniReader)), logger_(std::move(logger))
 {
 	cities_ = iniReader_->ReadCities();
 	LogCities();
-	StartTasks(std::move(poller));
+	StartTasks(std::move(poller), std::move(databaseEngine));
 }
 
 WeatherApp::~WeatherApp()
@@ -44,11 +44,11 @@ void WeatherApp::OnExit()
 	keepRunning_ = false;
 }
 
-void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller)
+void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine)
 {
 	tasks_.clear();
 	tasks_.emplace_back(std::make_unique<LoggingTask>(std::make_unique<Timer>(10), logger_));
-	tasks_.emplace_back(std::make_unique<WeatherTask>(GetUrls(), std::move(poller), std::make_unique<Timer>(5)));
+	tasks_.emplace_back(std::make_unique<WeatherTask>(GetUrls(), std::move(poller), std::make_unique<Timer>(5), std::move(databaseEngine)));
 	for (auto& task : tasks_)
 	{
 		task->Start();
