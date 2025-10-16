@@ -2,6 +2,7 @@
 #include <fstream>  
 #include <memory>
 #include <vector>
+#include <mutex>
 #include "ILogger.h"
 
 class Logger : public ILogger  
@@ -28,6 +29,7 @@ private:
     static std::ofstream logFile_;
 	std::string LastLogTime_;
     std::vector<std::string> collectedLogs_;
+    std::mutex mtx_;
 protected:  
     void Log(const std::string& message, LogLevel logLevel) override;  
 };

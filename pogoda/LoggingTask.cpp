@@ -1,9 +1,9 @@
 #include "LoggingTask.h"
 #include "ITimer.h"
-#include "Logger.h"
+#include "ILogger.h"
 
-LoggingTask::LoggingTask(std::unique_ptr<ITimer> timer) :
-	timer_(std::move(timer))
+LoggingTask::LoggingTask(std::unique_ptr<ITimer> timer, std::shared_ptr<ILogger> logger) :
+	timer_(std::move(timer)), logger_(std::move(logger))
 {
 }
 
@@ -13,7 +13,7 @@ void LoggingTask::Execute()
 	{
 		if(timer_->ShouldTick())
 		{
-			//
+			logger_->LogCollectedLogs();
 		}
 		SleepForMilliseconds(100);
 	}

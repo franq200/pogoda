@@ -20,18 +20,22 @@ Logger::~Logger()
 
 void Logger::LogCollectedLogs()
 {
-	for (const auto& log : collectedLogs_)
 	{
-		if (logFile_.is_open())
+		std::unique_lock<std::mutex> lock(mtx_);
+		for (const auto& log : collectedLogs_)
 		{
-			logFile_ << log << std::endl;
+			if (logFile_.is_open())
+			{
+				logFile_ << log << "\n";
+			}
+			else
+			{
+				std::cerr << "Log file is not open. Cannot write log: " << log << std::endl;
+			}
 		}
-		else
-		{
-			std::cerr << "Log file is not open. Cannot write log: " << log << std::endl;
-		}
+		collectedLogs_.clear();
 	}
-	collectedLogs_.clear();
+	logFile_.flush();
 }
 
 Logger::Logger()
@@ -56,6 +60,7 @@ void Logger::CreateLogFile()
 
 void Logger::Log(const std::string& message, LogLevel logLevel)
 {
+	std::unique_lock<std::mutex> lock(mtx_);
 	if (LastLogTime_ != TimeProvider::GetCurrentDay())
 	{
 		CreateLogFile();
