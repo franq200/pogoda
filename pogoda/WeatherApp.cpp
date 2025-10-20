@@ -7,12 +7,15 @@
 #include "ITask.h"
 #include "LoggingTask.h"
 #include "WeatherTask.h"
+#include "IDatabaseEngine.h"
 
 WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
 	: iniReader_(std::move(iniReader)), logger_(std::move(logger))
 {
 	cities_ = iniReader_->ReadCities();
 	LogCities();
+	databaseEngine->connect("pogoda.db");
+	SaveCitiesToDatabase(databaseEngine.get());
 	StartTasks(std::move(poller), std::move(databaseEngine));
 }
 
@@ -85,5 +88,18 @@ void WeatherApp::LogCities() const
 			message += "\n - " + city;
 		}
 		logger_->LogInfo(message);
+	}
+}
+
+void WeatherApp::SaveCitiesToDatabase(IDatabaseEngine* databaseEngine) const
+{
+	for (const auto& city : cities_)
+	{
+		std::string query =
+			"INSERT INTO Lokalizacja (nazwa) "
+			"SELECT '" + city + "' "
+			"WHERE NOT EXISTS (SELECT 1 FROM Lokalizacja WHERE nazwa = '" + city + "');";
+
+		databaseEngine->executeQuery(query);
 	}
 }

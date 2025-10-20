@@ -29,7 +29,7 @@ WeatherHttpPoller::~WeatherHttpPoller()
 	}
 }
 
-void WeatherHttpPoller::Poll(const std::string& url)
+WeatherData WeatherHttpPoller::Poll(const std::string& url)
 {
 	auto logger = Logger::GetInstance();
 	std::string response;
@@ -40,7 +40,7 @@ void WeatherHttpPoller::Poll(const std::string& url)
 	if (res != CURLE_OK)
 	{
 		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
-		return;
+		return {};
 	}
 	response_ = dataParser_->Deserialize(response);
 
@@ -53,4 +53,5 @@ void WeatherHttpPoller::Poll(const std::string& url)
 			  << "Temperature: " << response_.temperature << "\n"
 			  << "Humidity: " << response_.humidity << "\n"
 			<< "Wind Speed: " << response_.windSpeed << "\n\n";
+	return response_;
 }

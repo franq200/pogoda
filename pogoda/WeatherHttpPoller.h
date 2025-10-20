@@ -9,13 +9,14 @@
 template<typename T>
 class IDataParser;
 
-struct WeatherData
+struct PollResult
 {
 	std::string location;
 	std::string temperature;
 	std::string humidity;
 	std::string windSpeed;
 };
+using WeatherData = PollResult;
 
 inline void from_json(const nlohmann::json& j, WeatherData& w)
 {
@@ -43,7 +44,7 @@ class WeatherHttpPoller : public IHttpPoller
 public:
 	WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser);
 	~WeatherHttpPoller() override;
-	void Poll(const std::string& url) override;
+	WeatherData Poll(const std::string& url) override;
 private:
 	CURL* curl_;
 	WeatherData response_;

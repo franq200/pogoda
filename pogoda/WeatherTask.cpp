@@ -1,5 +1,6 @@
 #include "WeatherTask.h"
 #include "ITimer.h"
+#include "WeatherHttpPoller.h"
 #include "IHttpPoller.h"
 #include "IDatabaseEngine.h"
 
@@ -14,10 +15,26 @@ void WeatherTask::Execute()
 	{
 		if(timer_->ShouldTick())
 		{
+			std::vector<WeatherData> polledData;
 			for (const auto& url : urls_)
 			{
-				poller_->Poll(url); // przekazywaæ
+				polledData.push_back(poller_->Poll(url));
 			}
+
+			for (const auto& data : polledData)
+			{
+				std::string query =
+					"INSERT INTO WeatherData (Location, CurrentTime, Temperatur, Humidity, WindSpeed) "
+					"VALUES ("
+					"(SELECT id_lokalizacji FROM Lokalizacja WHERE nazwa = '" + data.location + "'), "
+					"datetime('now'), "
+					"'" + data.temperature + "', "
+					"'" + data.humidity + "', "
+					"'" + data.windSpeed + "');";
+
+				databaseEngine_->executeQuery(query);
+			}
+
 		}
 		SleepForMilliseconds(100);
 	}

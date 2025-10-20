@@ -7,6 +7,7 @@
 #include "Logger.h"
 #include "JsonDataParser.h"
 #include "Timer.h"
+#include "SQLiteEngine.h"
 
 #include <sqlite3.h>
 #include <iostream>
@@ -35,7 +36,7 @@ int main()
 	std::signal(SIGTERM, OnExit);
 	test();
 	auto logger = Logger::GetInstance();
-	WeatherApp app(std::make_unique<WeatherHttpPoller>(std::make_unique<JsonDataParser<WeatherData>>()), std::make_unique<WeatherIniReader>("../config.ini"), logger);
+	WeatherApp app(std::make_unique<WeatherHttpPoller>(std::make_unique<JsonDataParser<WeatherData>>()), std::make_unique<WeatherIniReader>("../config.ini"), logger, std::make_unique<SQLiteEngine>());
 	app.Run();
 	return 0;
 }

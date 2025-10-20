@@ -3,11 +3,13 @@
 #include <vector>
 #include "IDataParser.h"
 
+struct PollResult;
+
 class IHttpPoller
 {
 public:
 	IHttpPoller() = default;
 	virtual ~IHttpPoller() = default;
-	virtual void Poll(const std::string& url) = 0;
+	virtual PollResult Poll(const std::string& url) = 0;
 };
 
