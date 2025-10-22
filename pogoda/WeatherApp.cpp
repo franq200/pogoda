@@ -96,9 +96,9 @@ void WeatherApp::SaveCitiesToDatabase(IDatabaseEngine* databaseEngine) const
 	for (const auto& city : cities_)
 	{
 		std::string query =
-			"INSERT INTO Lokalizacja (nazwa) "
+			"INSERT INTO Location (Name) "
 			"SELECT '" + city + "' "
-			"WHERE NOT EXISTS (SELECT 1 FROM Lokalizacja WHERE nazwa = '" + city + "');";
+			"WHERE NOT EXISTS (SELECT 1 FROM Location WHERE Name = '" + city + "');";
 
 		databaseEngine->executeQuery(query);
 	}

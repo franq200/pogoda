@@ -24,9 +24,9 @@ void WeatherTask::Execute()
 			for (const auto& data : polledData)
 			{
 				std::string query =
-					"INSERT INTO WeatherData (Location, CurrentTime, Temperatur, Humidity, WindSpeed) "
+					"INSERT INTO WeatherData (Location, CurrentTime, Temperature, Humidity, WindSpeed) "
 					"VALUES ("
-					"(SELECT id_lokalizacji FROM Lokalizacja WHERE nazwa = '" + data.location + "'), "
+					"'" + data.location + "', "
 					"datetime('now'), "
 					"'" + data.temperature + "', "
 					"'" + data.humidity + "', "
