@@ -15,10 +15,12 @@ void WeatherTask::Execute()
 	{
 		if(timer_->ShouldTick())
 		{
-			std::vector<WeatherData> polledData;
+			std::vector<std::unique_ptr<WeatherData>> polledData;
 			for (const auto& url : urls_)
 			{
-				polledData.push_back(poller_->Poll(url));
+				auto data = poller_->Poll(url);
+				std::unique_ptr<WeatherData> weatherData(static_cast<WeatherData*>(data.release()));
+				polledData.emplace_back(std::move(weatherData));
 			}
 
 			for (const auto& data : polledData)
@@ -26,11 +28,11 @@ void WeatherTask::Execute()
 				std::string query =
 					"INSERT INTO WeatherData (Location, CurrentTime, Temperature, Humidity, WindSpeed) "
 					"VALUES ("
-					"'" + data.location + "', "
+					"'" + data->location + "', "
 					"datetime('now'), "
-					"'" + data.temperature + "', "
-					"'" + data.humidity + "', "
-					"'" + data.windSpeed + "');";
+					"'" + data->temperature + "', "
+					"'" + data->humidity + "', "
+					"'" + data->windSpeed + "');";
 
 				databaseEngine_->executeQuery(query);
 			}

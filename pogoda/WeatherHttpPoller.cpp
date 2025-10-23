@@ -29,7 +29,7 @@ WeatherHttpPoller::~WeatherHttpPoller()
 	}
 }
 
-WeatherData WeatherHttpPoller::Poll(const std::string& url)
+std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const std::string& url)
 {
 	auto logger = Logger::GetInstance();
 	std::string response;
@@ -42,16 +42,17 @@ WeatherData WeatherHttpPoller::Poll(const std::string& url)
 		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
 		return {};
 	}
-	response_ = dataParser_->Deserialize(response);
+	response_ = std::make_unique<WeatherData>( dataParser_->Deserialize(response));
 
-	logger->LogInfo("Location: " + response_.location +
-		"Temperature: " + response_.temperature +
-		"Humidity: " + response_.humidity + 
-		"Wind Speed: " + response_.windSpeed);
+	logger->LogInfo("Location: " + response_->location +
+		"Temperature: " + response_->temperature +
+		"Humidity: " + response_->humidity + 
+		"Wind Speed: " + response_->windSpeed);
 
-	std::cerr<< "Location: " << response_.location << "\n"
-			  << "Temperature: " << response_.temperature << "\n"
-			  << "Humidity: " << response_.humidity << "\n"
-			<< "Wind Speed: " << response_.windSpeed << "\n\n";
-	return response_;
+	std::cerr<< "Location: " << response_->location << "\n"
+			  << "Temperature: " << response_->temperature << "\n"
+			  << "Humidity: " << response_->humidity << "\n"
+			<< "Wind Speed: " << response_->windSpeed << "\n\n";
+
+	return std::move(response_);
 }

@@ -1,15 +1,20 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <memory>
 #include "IDataParser.h"
 
-struct PollResult;
 
 class IHttpPoller
 {
 public:
+	struct PollResult
+	{
+	};
+
+public:
 	IHttpPoller() = default;
 	virtual ~IHttpPoller() = default;
-	virtual PollResult Poll(const std::string& url) = 0;
+	virtual std::unique_ptr<PollResult> Poll(const std::string& url) = 0;
 };
 
