@@ -2,7 +2,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "IDataParser.h"
 
 
 class IHttpPoller
