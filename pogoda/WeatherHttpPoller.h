@@ -9,12 +9,13 @@
 template<typename T>
 class IDataParser;
 
-struct WeatherData
+struct WeatherData :  public IHttpPoller::PollResult
 {
 	std::string location;
 	std::string temperature;
 	std::string humidity;
 	std::string windSpeed;
+	std::string localTime;
 };
 
 inline void from_json(const nlohmann::json& j, WeatherData& w)
@@ -23,6 +24,7 @@ inline void from_json(const nlohmann::json& j, WeatherData& w)
 	w.temperature = j.at("current_condition")[0].at("temp_C").get<std::string>();
 	w.humidity = j.at("current_condition")[0].at("humidity").get<std::string>();
 	w.location = j.at("nearest_area")[0].at("areaName")[0].at("value").get<std::string>();
+	w.localTime = j.at("current_condition")[0].at("localObsDateTime").get<std::string>();
 }
 inline void to_json(nlohmann::json& j, const WeatherData& w)
 {
@@ -31,7 +33,8 @@ inline void to_json(nlohmann::json& j, const WeatherData& w)
 		{"current_condition", nlohmann::json::array({nlohmann::json{
 				{"windspeedKmph", w.windSpeed},
 				{"temp_C", w.temperature},
-				{"humidity", w.humidity}}})},
+				{"humidity", w.humidity},
+				{"observation_time", w.localTime}}})},
 		{"nearest_area", nlohmann::json::array({nlohmann::json{
 				{"areaName", nlohmann::json::array({
 					nlohmann::json{{"value", w.location}}})}}})}
@@ -43,10 +46,10 @@ class WeatherHttpPoller : public IHttpPoller
 public:
 	WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser);
 	~WeatherHttpPoller() override;
-	void Poll(const std::string& url) override;
+	std::unique_ptr<PollResult> Poll(const std::string& url) override;
 private:
 	CURL* curl_;
-	WeatherData response_;
+	std::unique_ptr<WeatherData> response_;
 	std::unique_ptr<IDataParser<WeatherData>> dataParser_;
 };
 

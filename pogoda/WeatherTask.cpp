@@ -1,9 +1,11 @@
 #include "WeatherTask.h"
 #include "ITimer.h"
+#include "WeatherHttpPoller.h"
 #include "IHttpPoller.h"
+#include "IDatabaseEngine.h"
 
-WeatherTask::WeatherTask(std::vector<std::string> urls, std::unique_ptr<IHttpPoller> poller, std::unique_ptr<ITimer> timer) :
-	urls_(std::move(urls)), poller_(std::move(poller)), timer_(std::move(timer))
+WeatherTask::WeatherTask(std::vector<std::string> urls, std::unique_ptr<IHttpPoller> poller, std::unique_ptr<ITimer> timer, std::unique_ptr<IDatabaseEngine> databaseEngine) :
+	urls_(std::move(urls)), poller_(std::move(poller)), timer_(std::move(timer)), databaseEngine_(std::move(databaseEngine))
 {
 }
 
@@ -13,10 +15,31 @@ void WeatherTask::Execute()
 	{
 		if(timer_->ShouldTick())
 		{
+			std::vector<std::unique_ptr<WeatherData>> polledData;
 			for (const auto& url : urls_)
 			{
-				poller_->Poll(url);
+				auto data = poller_->Poll(url);
+				if (data != nullptr)
+				{
+					std::unique_ptr<WeatherData> weatherData(static_cast<WeatherData*>(data.release()));
+					polledData.emplace_back(std::move(weatherData));
+				}
 			}
+
+			for (const auto& data : polledData)
+			{
+				std::string query =
+					"INSERT INTO WeatherData (Location, CurrentTime, Temperature, Humidity, WindSpeed) "
+					"VALUES ("
+					"'" + data->location + "', "
+					"'" + data->localTime + "', "
+					"'" + data->temperature + "', "
+					"'" + data->humidity + "', "
+					"'" + data->windSpeed + "')";
+
+				databaseEngine_->executeQuery(query);
+			}
+
 		}
 		SleepForMilliseconds(100);
 	}

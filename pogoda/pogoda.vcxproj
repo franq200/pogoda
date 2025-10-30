@@ -129,9 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IDatabaseEngine.cpp" />
     <ClCompile Include="ITask.cpp" />
     <ClCompile Include="ITimer.cpp" />
     <ClCompile Include="LoggingTask.cpp" />
+    <ClCompile Include="SQLiteEngine.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimeProvider.cpp" />
     <ClCompile Include="WeatherApp.cpp" />
@@ -147,9 +149,11 @@
     <ClCompile Include="WeatherTask.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IDatabaseEngine.h" />
     <ClInclude Include="ITask.h" />
     <ClInclude Include="ITimer.h" />
     <ClInclude Include="LoggingTask.h" />
+    <ClInclude Include="SQLiteEngine.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimeProvider.h" />
     <ClInclude Include="WeatherApp.h" />
