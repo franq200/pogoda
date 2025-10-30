@@ -15,7 +15,7 @@ WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWea
 	cities_ = iniReader_->ReadCities();
 	LogCities();
 	databaseEngine->connect("pogoda.db");
-	SaveCitiesToDatabase(databaseEngine.get());
+	InitDatabase(databaseEngine.get());
 	StartTasks(std::move(poller), std::move(databaseEngine));
 }
 
@@ -91,8 +91,24 @@ void WeatherApp::LogCities() const
 	}
 }
 
-void WeatherApp::SaveCitiesToDatabase(IDatabaseEngine* databaseEngine) const
+void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine) const
 {
+	std::string createLocationTableQuery =
+		"CREATE TABLE Location(Name TEXT PRIMARY KEY)";
+	databaseEngine->executeQuery(createLocationTableQuery);
+
+	std::string createWeatherDataTableQuery =
+		R"(CREATE TABLE WeatherData
+		(
+			ID INTEGER PRIMARY KEY AUTOINCREMENT,
+			Location TEXT NOT NULL,
+			CurrentTime TEXT NOT NULL,
+			Temperature REAL,
+			Humidity REAL, WindSpeed,
+			FOREIGN KEY(Location) REFERENCES Location(Name)
+			))";
+	databaseEngine->executeQuery(createWeatherDataTableQuery);
+
 	for (const auto& city : cities_)
 	{
 		std::string query =

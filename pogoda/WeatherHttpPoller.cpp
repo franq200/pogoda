@@ -47,12 +47,14 @@ std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const std::stri
 	logger->LogInfo("Location: " + response_->location +
 		"Temperature: " + response_->temperature +
 		"Humidity: " + response_->humidity + 
-		"Wind Speed: " + response_->windSpeed);
+		"Wind Speed: " + response_->windSpeed +
+		"Time: " + response_->localTime);
 
 	std::cerr<< "Location: " << response_->location << "\n"
 			  << "Temperature: " << response_->temperature << "\n"
 			  << "Humidity: " << response_->humidity << "\n"
-			<< "Wind Speed: " << response_->windSpeed << "\n\n";
+			<< "Wind Speed: " << response_->windSpeed << "\n"
+			<< "Time:" << response_->localTime << "\n\n";
 
 	return std::move(response_);
 }

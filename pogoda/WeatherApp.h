@@ -21,7 +21,7 @@ private:
 	void StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine);
 	std::vector < std::string> GetUrls();
 	void LogCities() const;
-	void SaveCitiesToDatabase(IDatabaseEngine* databaseEngine) const;
+	void InitDatabase(IDatabaseEngine* databaseEngine) const;
 
 	std::vector<std::string> cities_;
 	std::unique_ptr<IWeatherIniReader> iniReader_;
