@@ -1,5 +1,5 @@
 #include "WeatherApp.h"
-#include "IWeatherIniReader.h"
+#include "IIniReader.h"
 #include "ILogger.h"
 #include "IHttpPoller.h"
 #include "Timer.h"
@@ -7,12 +7,17 @@
 #include "ITask.h"
 #include "LoggingTask.h"
 #include "WeatherTask.h"
+#include "CurrencyTask.h"
 #include "IDatabaseEngine.h"
 
-WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
+WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
 	: iniReader_(std::move(iniReader)), logger_(std::move(logger))
 {
-	cities_ = iniReader_->ReadCities();
+	cities_ = iniReader_->GetValues("Weather", "City");
+	codes_ = iniReader_->GetValues("Currency", "Code");
+	period_ = iniReader_->GetValue("Currency", "Period");
+	historyDays = iniReader_->GetValue("Currency", "HistoryDays");
+
 	LogCities();
 	databaseEngine->connect("pogoda.db");
 	InitDatabase(databaseEngine.get());
@@ -52,6 +57,7 @@ void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr
 	tasks_.clear();
 	tasks_.emplace_back(std::make_unique<LoggingTask>(std::make_unique<Timer>(10), logger_));
 	tasks_.emplace_back(std::make_unique<WeatherTask>(GetUrls(), std::move(poller), std::make_unique<Timer>(5), std::move(databaseEngine)));
+	tasks_.emplace_back(std::make_unique<CurrencyTask>(codes_, std::make_unique<Timer>(period_), historyDays, std::move(databaseEngine), std::move(poller)));
 	for (auto& task : tasks_)
 	{
 		task->Start();

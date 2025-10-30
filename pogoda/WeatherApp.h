@@ -6,14 +6,14 @@
 
 class ITimer;
 class IHttpPoller;
-class IWeatherIniReader;
+class IIniReader;
 class ILogger;
 class IDatabaseEngine;
 
 class WeatherApp
 {
 public:
-	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine);
+	WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine);
 	~WeatherApp();
 	void Run();
 	void OnExit();
@@ -24,7 +24,7 @@ private:
 	void InitDatabase(IDatabaseEngine* databaseEngine) const;
 
 	std::vector<std::string> cities_;
-	std::unique_ptr<IWeatherIniReader> iniReader_;
+	std::unique_ptr<IIniReader> iniReader_;
 	std::shared_ptr<ILogger> logger_;
 	std::vector<std::unique_ptr<ITask>> tasks_;
 	bool keepRunning_ = true;

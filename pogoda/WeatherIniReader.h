@@ -1,12 +1,13 @@
 #pragma once
-#include "IWeatherIniReader.h"
+#include "IIniReader.h"
 #include <INIReader.h>
 
-class WeatherIniReader : public IWeatherIniReader
+class DataCollectorIniReader : public IIniReader
 {
 public:
-	WeatherIniReader(const std::string& path);
-	std::vector<std::string> ReadCities() const override;
+	DataCollectorIniReader(const std::string& path);
+	std::vector<std::string> GetValues(const std::string& section, const std::string& key) const override;
+	std::string GetValue(const std::string& section, const std::string& key) const override;
 private:
 	INIReader reader_;
 };

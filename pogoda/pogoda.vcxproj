@@ -161,7 +161,7 @@
     <ClInclude Include="IDataParser.h" />
     <ClInclude Include="IHttpPoller.h" />
     <ClInclude Include="ILogger.h" />
-    <ClInclude Include="IWeatherIniReader.h" />
+    <ClInclude Include="IIniReader.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="WeatherIniReader.h" />
     <ClInclude Include="JsonDataParser.h" />
