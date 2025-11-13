@@ -13,15 +13,15 @@
 WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
 	: iniReader_(std::move(iniReader)), logger_(std::move(logger))
 {
-	cities_ = iniReader_->GetValues("Weather", "City");
-	codes_ = iniReader_->GetValues("Currency", "Code");
-	period_ = iniReader_->GetValue("Currency", "Period");
-	historyDays = iniReader_->GetValue("Currency", "HistoryDays");
+	std::vector<std::string> cities = iniReader_->GetValues("Weather", "City");
+	std::vector<std::string> codes = iniReader_->GetValues("Currency", "Code");
+	std::string period = iniReader_->GetValue("Currency", "Period");
+	std::string historyDays = iniReader_->GetValue("Currency", "HistoryDays");
 
-	LogCities();
+	LogCities(cities);
 	databaseEngine->connect("pogoda.db");
-	InitDatabase(databaseEngine.get());
-	StartTasks(std::move(poller), std::move(databaseEngine));
+	InitDatabase(databaseEngine.get(), cities);
+	StartTasks(std::move(poller), std::move(databaseEngine), cities, codes, period, historyDays);
 }
 
 WeatherApp::~WeatherApp()
@@ -52,44 +52,29 @@ void WeatherApp::OnExit()
 	keepRunning_ = false;
 }
 
-void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine)
+void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine, 
+	const std::vector<std::string>& cities, const std::vector<std::string>& codes, const std::string& period, const std::string& historyDays)
 {
 	tasks_.clear();
 	tasks_.emplace_back(std::make_unique<LoggingTask>(std::make_unique<Timer>(10), logger_));
-	tasks_.emplace_back(std::make_unique<WeatherTask>(GetUrls(), std::move(poller), std::make_unique<Timer>(5), std::move(databaseEngine)));
-	tasks_.emplace_back(std::make_unique<CurrencyTask>(codes_, std::make_unique<Timer>(period_), historyDays, std::move(databaseEngine), std::move(poller)));
+	tasks_.emplace_back(std::make_unique<WeatherTask>(cities, std::move(poller), std::make_unique<Timer>(5), std::move(databaseEngine)));
+	tasks_.emplace_back(std::make_unique<CurrencyTask>(codes, std::make_unique<Timer>(period), historyDays, std::move(databaseEngine), std::move(poller)));
 	for (auto& task : tasks_)
 	{
 		task->Start();
 	}
 }
 
-std::vector<std::string> WeatherApp::GetUrls()
+void WeatherApp::LogCities(const std::vector<std::string>& cities) const
 {
-	std::vector<std::string> urls;
-	urls.clear();
-	urls.reserve(cities_.size());
-
-	std::string baseUrl = "https://wttr.in/";
-	std::string format = "?format=j1";
-
-	for (const auto& city : cities_)
-	{
-		urls.push_back(baseUrl + city + format);
-	}
-	return urls;
-}
-
-void WeatherApp::LogCities() const
-{
-	if (cities_.empty())
+	if (cities.empty())
 	{
 		logger_->LogCriticalError("Brak miast do monitorowania. Sprawdü plik config.ini.");
 	}
 	else
 	{
 		std::string message = "Wczytano miasta do monitorowania:";
-		for (const auto& city : cities_)
+		for (const auto& city : cities)
 		{
 			message += "\n - " + city;
 		}
@@ -97,7 +82,7 @@ void WeatherApp::LogCities() const
 	}
 }
 
-void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine) const
+void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities) const
 {
 	std::string createLocationTableQuery =
 		"CREATE TABLE Location(Name TEXT PRIMARY KEY)";
@@ -115,7 +100,7 @@ void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine) const
 			))";
 	databaseEngine->executeQuery(createWeatherDataTableQuery);
 
-	for (const auto& city : cities_)
+	for (const auto& city : cities)
 	{
 		std::string query =
 			"INSERT INTO Location (Name) "

@@ -1,4 +1,4 @@
-#include "WeatherHttpPoller.h"
+#include "CurrencyPoller.h"
 #include "IDataParser.h"
 #include "Logger.h"
 #include <iostream>
@@ -10,18 +10,18 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* res
 	return totalSize;
 }
 
-WeatherHttpPoller::WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser)
+CurrencyPoller::CurrencyPoller(std::unique_ptr<IDataParser<CurrencyData>> dataParser)
 	: dataParser_(std::move(dataParser))
 {
 	curl_ = curl_easy_init();
 	if (!curl_)
 	{
-		throw std::runtime_error("Failed to initialize Weather CURL");
+		throw std::runtime_error("Failed to initialize Currency CURL");
 	}
 	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteCallback);
 }
 
-WeatherHttpPoller::~WeatherHttpPoller()
+CurrencyPoller::~CurrencyPoller()
 {
 	if (curl_)
 	{
@@ -29,7 +29,7 @@ WeatherHttpPoller::~WeatherHttpPoller()
 	}
 }
 
-std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const std::string& url)
+std::unique_ptr<IHttpPoller::PollResult> CurrencyPoller::Poll(const std::string& url)
 {
 	auto logger = Logger::GetInstance();
 	std::string response;
@@ -42,19 +42,21 @@ std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const std::stri
 		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
 		return {};
 	}
-	response_ = std::make_unique<WeatherData>( dataParser_->Deserialize(response));
+	response_ = std::make_unique<CurrencyData>(dataParser_->Deserialize(response));
 
-	logger->LogInfo("Location: " + response_->location +
+	for (const auto& rate : response_->rates)
+	{
+		logger->LogInfo( "Code: " + response_->code + 
+			"Time: " + rate.time +
+			"Ask Price: " + rate.askPrice +
+			"Bid Price: " + rate.bidPrice);
+	}
+
+	/*logger->LogInfo("Location: " + response_->location +
 		"Temperature: " + response_->temperature +
-		"Humidity: " + response_->humidity + 
+		"Humidity: " + response_->humidity +
 		"Wind Speed: " + response_->windSpeed +
-		"Time: " + response_->localTime);
-
-	std::cerr<< "Location: " << response_->location << "\n"
-			  << "Temperature: " << response_->temperature << "\n"
-			  << "Humidity: " << response_->humidity << "\n"
-			<< "Wind Speed: " << response_->windSpeed << "\n"
-			<< "Time:" << response_->localTime << "\n\n";
+		"Time: " + response_->localTime);*/
 
 	return std::move(response_);
 }

@@ -129,6 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CurrencyPoller.cpp" />
+    <ClCompile Include="CurrencyTask.cpp" />
     <ClCompile Include="IDatabaseEngine.cpp" />
     <ClCompile Include="ITask.cpp" />
     <ClCompile Include="ITimer.cpp" />
@@ -149,6 +151,8 @@
     <ClCompile Include="WeatherTask.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CurrencyPoller.h" />
+    <ClInclude Include="CurrencyTask.h" />
     <ClInclude Include="IDatabaseEngine.h" />
     <ClInclude Include="ITask.h" />
     <ClInclude Include="ITimer.h" />

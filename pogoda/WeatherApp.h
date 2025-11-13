@@ -18,12 +18,11 @@ public:
 	void Run();
 	void OnExit();
 private:
-	void StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine);
-	std::vector < std::string> GetUrls();
-	void LogCities() const;
-	void InitDatabase(IDatabaseEngine* databaseEngine) const;
+	void StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine, 
+		const std::vector<std::string>& cities_, const std::vector<std::string>& codes, const std::string& period, const std::string& historyDays);
+	void LogCities(const std::vector<std::string>& citites) const;
+	void InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities) const;
 
-	std::vector<std::string> cities_;
 	std::unique_ptr<IIniReader> iniReader_;
 	std::shared_ptr<ILogger> logger_;
 	std::vector<std::unique_ptr<ITask>> tasks_;
