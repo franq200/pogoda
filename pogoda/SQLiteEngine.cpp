@@ -44,8 +44,11 @@ bool SQLiteEngine::isConnected() const
 bool SQLiteEngine::executeQuery(const std::string& query)
 {
 	char* errMsg = nullptr;
-	results_.clear();
-	if (sqlite3_exec(db_, query.c_str(), &ExecQueryCallback, static_cast<void*>(&results_), &errMsg) != SQLITE_OK)
+
+	std::unique_lock<std::mutex> lock(mutex_);
+	auto threadId = std::this_thread::get_id();
+	results_[threadId].clear();
+	if (sqlite3_exec(db_, query.c_str(), &ExecQueryCallback, static_cast<void*>(&(results_[threadId])), &errMsg) != SQLITE_OK)
 	{
 		Logger::GetInstance()->LogError("SQL error: " + std::string(errMsg));
 		sqlite3_free(errMsg);

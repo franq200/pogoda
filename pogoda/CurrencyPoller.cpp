@@ -3,13 +3,6 @@
 #include "Logger.h"
 #include <iostream>
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* response)
-{
-	size_t totalSize = size * nmemb;
-	response->append((char*)contents, totalSize);
-	return totalSize;
-}
-
 CurrencyPoller::CurrencyPoller(std::unique_ptr<IDataParser<CurrencyData>> dataParser)
 	: dataParser_(std::move(dataParser))
 {
@@ -18,7 +11,7 @@ CurrencyPoller::CurrencyPoller(std::unique_ptr<IDataParser<CurrencyData>> dataPa
 	{
 		throw std::runtime_error("Failed to initialize Currency CURL");
 	}
-	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteCallback);
+	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, IHttpPoller::WriteCallback);
 }
 
 CurrencyPoller::~CurrencyPoller()
@@ -50,13 +43,11 @@ std::unique_ptr<IHttpPoller::PollResult> CurrencyPoller::Poll(const std::string&
 			"Time: " + rate.time +
 			"Ask Price: " + rate.askPrice +
 			"Bid Price: " + rate.bidPrice);
+		std::cerr << "Code: " << response_->code <<
+			"Time: " << rate.time <<
+			"Ask Price: " << rate.askPrice <<
+			"Bid Price: " << rate.bidPrice;
 	}
-
-	/*logger->LogInfo("Location: " + response_->location +
-		"Temperature: " + response_->temperature +
-		"Humidity: " + response_->humidity +
-		"Wind Speed: " + response_->windSpeed +
-		"Time: " + response_->localTime);*/
 
 	return std::move(response_);
 }

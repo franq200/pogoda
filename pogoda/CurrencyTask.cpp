@@ -3,9 +3,10 @@
 #include "IDatabaseEngine.h"
 #include "CurrencyPoller.h"
 
-CurrencyTask::CurrencyTask(const std::vector<std::string>& codes, std::unique_ptr<ITimer> timer, const std::string& historyDays, std::unique_ptr<IDatabaseEngine> databaseEngine, std::unique_ptr<IHttpPoller> poller)
+CurrencyTask::CurrencyTask(const std::vector<std::string>& codes, std::unique_ptr<ITimer> timer, const std::string& historyDays, std::shared_ptr<IDatabaseEngine> databaseEngine, std::unique_ptr<IHttpPoller> poller)
 	: timer_(std::move(timer)), historyDays_(historyDays), databaseEngine_(std::move(databaseEngine)), poller_(std::move(poller))
 {
+	
 	CreateUrls(codes);
 }
 
@@ -28,6 +29,7 @@ void CurrencyTask::Execute()
 
 			for (const auto& data : polledData)
 			{
+				/*
 				for (const auto& rate : data->rates)
 				{
 					std::string query =
@@ -39,7 +41,7 @@ void CurrencyTask::Execute()
 						"'" + rate.askPrice + "')";
 					
 					databaseEngine_->executeQuery(query);
-				}
+				}*/
 			}
 
 		}
@@ -47,7 +49,16 @@ void CurrencyTask::Execute()
 	}
 }
 
-void CurrencyTask::CreateUrls(const std::vector<std::string>& codes) const
+void CurrencyTask::CreateUrls(const std::vector<std::string>& codes)
 {
-	return;
+	urls_.clear();
+	urls_.reserve(codes.size());
+
+	std::string baseUrl = "https://api.nbp.pl/api/exchangerates/rates/C/";
+	std::string format = "/last/5/?format=json";
+
+	for (const auto& code : codes)
+	{
+		urls_.push_back(baseUrl + code + format);
+	}
 }

@@ -10,7 +10,7 @@
 #include "CurrencyTask.h"
 #include "IDatabaseEngine.h"
 
-WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
+WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> weatherPoller, std::unique_ptr<IHttpPoller> currencyPoller, std::unique_ptr<IIniReader> iniReader, std::shared_ptr<ILogger> logger, std::shared_ptr<IDatabaseEngine> databaseEngine)
 	: iniReader_(std::move(iniReader)), logger_(std::move(logger))
 {
 	std::vector<std::string> cities = iniReader_->GetValues("Weather", "City");
@@ -21,7 +21,7 @@ WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IIni
 	LogCities(cities);
 	databaseEngine->connect("pogoda.db");
 	InitDatabase(databaseEngine.get(), cities);
-	StartTasks(std::move(poller), std::move(databaseEngine), cities, codes, period, historyDays);
+	StartTasks(std::move(weatherPoller), std::move(currencyPoller), std::move(databaseEngine), cities, codes, period, historyDays);
 }
 
 WeatherApp::~WeatherApp()
@@ -52,13 +52,13 @@ void WeatherApp::OnExit()
 	keepRunning_ = false;
 }
 
-void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine, 
+void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> weatherPoller, std::unique_ptr<IHttpPoller> currencyPoller, std::shared_ptr<IDatabaseEngine> databaseEngine,
 	const std::vector<std::string>& cities, const std::vector<std::string>& codes, const std::string& period, const std::string& historyDays)
 {
 	tasks_.clear();
 	tasks_.emplace_back(std::make_unique<LoggingTask>(std::make_unique<Timer>(10), logger_));
-	tasks_.emplace_back(std::make_unique<WeatherTask>(cities, std::move(poller), std::make_unique<Timer>(5), std::move(databaseEngine)));
-	tasks_.emplace_back(std::make_unique<CurrencyTask>(codes, std::make_unique<Timer>(period), historyDays, std::move(databaseEngine), std::move(poller)));
+	tasks_.emplace_back(std::make_unique<WeatherTask>(cities, std::move(weatherPoller), std::make_unique<Timer>(5), databaseEngine));
+	tasks_.emplace_back(std::make_unique<CurrencyTask>(codes, std::make_unique<Timer>(std::stoull(period)), historyDays, databaseEngine, std::move(currencyPoller)));
 	for (auto& task : tasks_)
 	{
 		task->Start();

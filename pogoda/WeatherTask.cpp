@@ -4,7 +4,7 @@
 #include "IHttpPoller.h"
 #include "IDatabaseEngine.h"
 
-WeatherTask::WeatherTask(const std::vector<std::string>& cities, std::unique_ptr<IHttpPoller> poller, std::unique_ptr<ITimer> timer, std::unique_ptr<IDatabaseEngine> databaseEngine) :
+WeatherTask::WeatherTask(const std::vector<std::string>& cities, std::unique_ptr<IHttpPoller> poller, std::unique_ptr<ITimer> timer, std::shared_ptr<IDatabaseEngine> databaseEngine) :
 	poller_(std::move(poller)), timer_(std::move(timer)), databaseEngine_(std::move(databaseEngine))
 {
 	CreateUrls(cities);

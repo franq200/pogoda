@@ -22,35 +22,37 @@ struct CurrencyData : public IHttpPoller::PollResult
 	std::vector<Rate> rates;
 };
 
-inline void from_json(const nlohmann::json& j, CurrencyData& d)
-{
-	d.code = j.at("current_condition")[0].at("windspeedKmph").get<std::string>();
-	d.rates = j.at("current_condition")[0].at("temp_C").get<std::string>();
-}
-inline void to_json(nlohmann::json& j, const CurrencyData& d)
-{
-	j = nlohmann::json
-	{
-		{"current_condition", nlohmann::json::array({nlohmann::json{
-				{"windspeedKmph", d.code},
-				{"temp_C", d.rates},}})}
-	};
-}
-
 inline void from_json(const nlohmann::json& j, Rate& d)
 {
-	d.time = j.at("current_condition")[0].at("windspeedKmph").get<std::string>();
-	d.askPrice = j.at("current_condition")[0].at("temp_C").get<std::string>();
-	d.bidPrice = j.at("current_condition")[0].at("temp_C").get<std::string>();
+	d.time = j.at("effectiveDate").get<std::string>();
+	d.askPrice = std::to_string(j.at("ask").get<double>());
+	d.bidPrice = std::to_string(j.at("bid").get<double>());
 }
+
+inline void from_json(const nlohmann::json& j, CurrencyData& d)
+{
+	d.code = j.at("code").get<std::string>();
+	d.rates = j.at("rates").get<std::vector<Rate>>();
+}
+
 inline void to_json(nlohmann::json& j, const Rate& d)
 {
 	j = nlohmann::json
 	{
-		{"current_condition", nlohmann::json::array({nlohmann::json{
-				{"windspeedKmph", d.time},
-				{"temp_C", d.askPrice},
-				{"humidity", d.bidPrice},}})}
+		nlohmann::json::array({nlohmann::json{
+				{"effectiveDate", d.time},
+				{"ask", d.askPrice},
+				{"bid", d.bidPrice},}})
+	};
+}
+
+inline void to_json(nlohmann::json& j, const CurrencyData& d)
+{
+	j = nlohmann::json
+	{
+		nlohmann::json::array({nlohmann::json{
+				{"code", d.code},
+				{"rates", d.rates},}})
 	};
 }
  

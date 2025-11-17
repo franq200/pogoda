@@ -3,13 +3,6 @@
 #include "Logger.h"
 #include <iostream>
 
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* response)
-{
-	size_t totalSize = size * nmemb;
-	response->append((char*)contents, totalSize);
-	return totalSize;
-}
-
 WeatherHttpPoller::WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser)
 	: dataParser_(std::move(dataParser))
 {
@@ -18,7 +11,7 @@ WeatherHttpPoller::WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> d
 	{
 		throw std::runtime_error("Failed to initialize Weather CURL");
 	}
-	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, WriteCallback);
+	curl_easy_setopt(curl_, CURLOPT_WRITEFUNCTION, IHttpPoller::WriteCallback);
 }
 
 WeatherHttpPoller::~WeatherHttpPoller()
