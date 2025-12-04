@@ -20,7 +20,7 @@ WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> weatherPoller, std::unique_p
 
 	LogCities(cities);
 	databaseEngine->connect("pogoda.db");
-	InitDatabase(databaseEngine.get(), cities);
+	InitDatabase(databaseEngine.get(), cities, codes);
 	StartTasks(std::move(weatherPoller), std::move(currencyPoller), std::move(databaseEngine), cities, codes, period, historyDays);
 }
 
@@ -82,14 +82,14 @@ void WeatherApp::LogCities(const std::vector<std::string>& cities) const
 	}
 }
 
-void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities) const
+void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities, const std::vector<std::string>& codes) const
 {
 	std::string createLocationTableQuery =
-		"CREATE TABLE Location(Name TEXT PRIMARY KEY)";
+		"CREATE TABLE IF NOT EXISTS Location(Name TEXT PRIMARY KEY)";
 	databaseEngine->executeQuery(createLocationTableQuery);
 
 	std::string createWeatherDataTableQuery =
-		R"(CREATE TABLE WeatherData
+		R"(CREATE TABLE IF NOT EXISTS WeatherData
 		(
 			ID INTEGER PRIMARY KEY AUTOINCREMENT,
 			Location TEXT NOT NULL,
@@ -98,7 +98,28 @@ void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine, const std::vector
 			Humidity REAL, WindSpeed,
 			FOREIGN KEY(Location) REFERENCES Location(Name)
 			))";
+
+	std::string createCurrencyDataTableQuery = 	
+		R"(CREATE TABLE IF NOT EXISTS Currency
+		(
+			ID INTEGER PRIMARY KEY AUTOINCREMENT,
+			Code TEXT NOT NULL,
+			Time TEXT NOT NULL,
+			BidPrice REAL,
+			AskPrice REAL
+		))";
+	databaseEngine->executeQuery(createCurrencyDataTableQuery);
 	databaseEngine->executeQuery(createWeatherDataTableQuery);
+	/*
+	for (const auto& code : codes)
+	{
+		std::string query =
+			"INSERT INTO Currency (Code) "
+			"SELECT '" + code + "' "
+			"WHERE NOT EXISTS (SELECT 1 FROM Currency WHERE Code = '" + code + "');";
+		databaseEngine->executeQuery(query);
+	}
+	*/
 
 	for (const auto& city : cities)
 	{

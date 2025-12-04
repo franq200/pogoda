@@ -21,7 +21,7 @@ private:
 	void StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IHttpPoller> currencyPoller, std::shared_ptr<IDatabaseEngine> databaseEngine,
 		const std::vector<std::string>& cities_, const std::vector<std::string>& codes, const std::string& period, const std::string& historyDays);
 	void LogCities(const std::vector<std::string>& citites) const;
-	void InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities) const;
+	void InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities, const std::vector<std::string>& codes) const;
 
 	std::unique_ptr<IIniReader> iniReader_;
 	std::shared_ptr<ILogger> logger_;

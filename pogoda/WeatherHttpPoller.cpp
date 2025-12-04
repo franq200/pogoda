@@ -1,6 +1,7 @@
 #include "WeatherHttpPoller.h"
 #include "IDataParser.h"
 #include "Logger.h"
+#include "WeatherTask.h"
 #include <iostream>
 
 WeatherHttpPoller::WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser)
@@ -22,12 +23,13 @@ WeatherHttpPoller::~WeatherHttpPoller()
 	}
 }
 
-std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const std::string& url)
+std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const PollRequest& request)
 {
+	const WeatherRequest& weatherRequest = static_cast<const WeatherRequest&>(request);
 	auto logger = Logger::GetInstance();
 	std::string response;
 	curl_easy_setopt(curl_, CURLOPT_WRITEDATA, &response);
-	curl_easy_setopt(curl_, CURLOPT_URL, url.c_str());
+	curl_easy_setopt(curl_, CURLOPT_URL, weatherRequest.url.c_str());
 
 	CURLcode res = curl_easy_perform(curl_);
 	if (res != CURLE_OK)
@@ -35,19 +37,19 @@ std::unique_ptr<IHttpPoller::PollResult> WeatherHttpPoller::Poll(const std::stri
 		logger->LogError("curl_easy_perform() failed: " + std::string(curl_easy_strerror(res)));
 		return {};
 	}
-	response_ = std::make_unique<WeatherData>( dataParser_->Deserialize(response));
+	response_ = std::make_unique<WeatherData>(dataParser_->Deserialize(response));
 
 	logger->LogInfo("Location: " + response_->location +
 		"Temperature: " + response_->temperature +
-		"Humidity: " + response_->humidity + 
+		"Humidity: " + response_->humidity +
 		"Wind Speed: " + response_->windSpeed +
 		"Time: " + response_->localTime);
 
-	std::cerr<< "Location: " << response_->location << "\n"
-			  << "Temperature: " << response_->temperature << "\n"
-			  << "Humidity: " << response_->humidity << "\n"
-			<< "Wind Speed: " << response_->windSpeed << "\n"
-			<< "Time:" << response_->localTime << "\n\n";
+	std::cout << "Location: " << response_->location << "\n"
+		<< "Temperature: " << response_->temperature << "\n"
+		<< "Humidity: " << response_->humidity << "\n"
+		<< "Wind Speed: " << response_->windSpeed << "\n"
+		<< "Time:" << response_->localTime << "\n\n";
 
 	return std::move(response_);
 }

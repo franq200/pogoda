@@ -9,11 +9,12 @@ public:
 	struct PollResult
 	{
 	};
-
+	struct PollRequest
+	{ };
 public:
 	IHttpPoller() = default;
 	virtual ~IHttpPoller() = default;
-	virtual std::unique_ptr<PollResult> Poll(const std::string& url) = 0;
+	virtual std::unique_ptr<PollResult> Poll(const PollRequest& url) = 0;
 protected:
 	static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* response)
 	{

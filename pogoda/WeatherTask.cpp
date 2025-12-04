@@ -19,7 +19,9 @@ void WeatherTask::Execute()
 			std::vector<std::unique_ptr<WeatherData>> polledData;
 			for (const auto& url : urls_)
 			{
-				auto data = poller_->Poll(url);
+				WeatherRequest request;
+				request.url = url;
+				auto data = poller_->Poll(request);
 				if (data != nullptr)
 				{
 					std::unique_ptr<WeatherData> weatherData(static_cast<WeatherData*>(data.release()));
