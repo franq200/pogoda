@@ -110,16 +110,6 @@ void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine, const std::vector
 		))";
 	databaseEngine->executeQuery(createCurrencyDataTableQuery);
 	databaseEngine->executeQuery(createWeatherDataTableQuery);
-	/*
-	for (const auto& code : codes)
-	{
-		std::string query =
-			"INSERT INTO Currency (Code) "
-			"SELECT '" + code + "' "
-			"WHERE NOT EXISTS (SELECT 1 FROM Currency WHERE Code = '" + code + "');";
-		databaseEngine->executeQuery(query);
-	}
-	*/
 
 	for (const auto& city : cities)
 	{

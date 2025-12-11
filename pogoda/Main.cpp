@@ -24,7 +24,6 @@ int main()
 {
 	std::signal(SIGINT, OnExit);
 	std::signal(SIGTERM, OnExit);
-	test();
 	auto logger = Logger::GetInstance();
 	WeatherApp app(std::make_unique<WeatherHttpPoller>(std::make_unique<JsonDataParser<WeatherData>>()), std::make_unique<CurrencyPoller>(std::make_unique<JsonDataParser<CurrencyResponse>>()), std::make_unique<DataCollectorIniReader>("../config.ini"), logger, std::make_unique<SQLiteEngine>());
 	app.Run();

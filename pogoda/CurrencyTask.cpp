@@ -31,36 +31,13 @@ void CurrencyTask::Execute()
 			{
 				for (const auto& rate : data->rates)
 				{
-					std::string query;
-					if (rate.bidPrice == "")
-					{
-						query = "INSERT INTO Currency (Code, Time, BidPrice, AskPrice) "
-							"VALUES ("
-							"'" + data->code + "', "
-							"'" + rate.time + "', "
-							"'""NULL, "
-							"'""NULL')";
-					}
-					else
-					{
-						query =
-							"INSERT INTO Currency (Code, Time, BidPrice, AskPrice) "
-							"VALUES ("
-							"'" + data->code + "', "
-							"'" + rate.time + "', "
-							"'" + rate.bidPrice  + "', "
-							"'" + rate.askPrice + "')";
-					}
-					/*
 					std::string query =
 						"INSERT INTO Currency (Code, Time, BidPrice, AskPrice) "
 						"VALUES ("
 						"'" + data->code + "', "
 						"'" + rate.time + "', "
-						"'" + rate.bidPrice == "" ? "NULL" : rate.bidPrice + "', "
-						"'" + rate.askPrice == "" ? "NULL" : rate.askPrice + "')";
-					*/
-						
+						"'" + (rate.bidPrice == "" ? "NULL" : rate.bidPrice) + "', "
+						"'" + (rate.askPrice == "" ? "NULL" : rate.askPrice) + "')";
 					
 					databaseEngine_->executeQuery(query);
 				}
