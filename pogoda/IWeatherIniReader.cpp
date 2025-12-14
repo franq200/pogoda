@@ -1,1 +1,1 @@
-#include "IWeatherIniReader.h"
+#include "IIniReader.h"

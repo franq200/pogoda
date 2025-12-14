@@ -46,7 +46,7 @@ class WeatherHttpPoller : public IHttpPoller
 public:
 	WeatherHttpPoller(std::unique_ptr<IDataParser<WeatherData>> dataParser);
 	~WeatherHttpPoller() override;
-	std::unique_ptr<PollResult> Poll(const std::string& url) override;
+	std::unique_ptr<PollResult> Poll(const PollRequest& request) override;
 private:
 	CURL* curl_;
 	std::unique_ptr<WeatherData> response_;

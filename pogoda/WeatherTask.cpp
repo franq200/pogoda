@@ -4,9 +4,10 @@
 #include "IHttpPoller.h"
 #include "IDatabaseEngine.h"
 
-WeatherTask::WeatherTask(std::vector<std::string> urls, std::unique_ptr<IHttpPoller> poller, std::unique_ptr<ITimer> timer, std::unique_ptr<IDatabaseEngine> databaseEngine) :
-	urls_(std::move(urls)), poller_(std::move(poller)), timer_(std::move(timer)), databaseEngine_(std::move(databaseEngine))
+WeatherTask::WeatherTask(const std::vector<std::string>& cities, std::unique_ptr<IHttpPoller> poller, std::unique_ptr<ITimer> timer, std::shared_ptr<IDatabaseEngine> databaseEngine) :
+	poller_(std::move(poller)), timer_(std::move(timer)), databaseEngine_(std::move(databaseEngine))
 {
+	CreateUrls(cities);
 }
 
 void WeatherTask::Execute()
@@ -18,7 +19,9 @@ void WeatherTask::Execute()
 			std::vector<std::unique_ptr<WeatherData>> polledData;
 			for (const auto& url : urls_)
 			{
-				auto data = poller_->Poll(url);
+				WeatherRequest request;
+				request.url = url;
+				auto data = poller_->Poll(request);
 				if (data != nullptr)
 				{
 					std::unique_ptr<WeatherData> weatherData(static_cast<WeatherData*>(data.release()));
@@ -42,5 +45,19 @@ void WeatherTask::Execute()
 
 		}
 		SleepForMilliseconds(100);
+	}
+}
+
+void WeatherTask::CreateUrls(const std::vector<std::string>& cities)
+{
+	urls_.clear();
+	urls_.reserve(cities.size());
+
+	std::string baseUrl = "https://wttr.in/";
+	std::string format = "?format=j1";
+
+	for (const auto& city : cities)
+	{
+		urls_.push_back(baseUrl + city + format);
 	}
 }

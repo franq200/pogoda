@@ -1,5 +1,5 @@
 #include "WeatherApp.h"
-#include "IWeatherIniReader.h"
+#include "IIniReader.h"
 #include "ILogger.h"
 #include "IHttpPoller.h"
 #include "Timer.h"
@@ -7,16 +7,21 @@
 #include "ITask.h"
 #include "LoggingTask.h"
 #include "WeatherTask.h"
+#include "CurrencyTask.h"
 #include "IDatabaseEngine.h"
 
-WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IWeatherIniReader> iniReader, std::shared_ptr<ILogger> logger, std::unique_ptr<IDatabaseEngine> databaseEngine)
+WeatherApp::WeatherApp(std::unique_ptr<IHttpPoller> weatherPoller, std::unique_ptr<IHttpPoller> currencyPoller, std::unique_ptr<IIniReader> iniReader, std::shared_ptr<ILogger> logger, std::shared_ptr<IDatabaseEngine> databaseEngine)
 	: iniReader_(std::move(iniReader)), logger_(std::move(logger))
 {
-	cities_ = iniReader_->ReadCities();
-	LogCities();
+	std::vector<std::string> cities = iniReader_->GetValues("Weather", "City");
+	std::vector<std::string> codes = iniReader_->GetValues("Currency", "Code");
+	std::string period = iniReader_->GetValue("Currency", "Period");
+	std::string historyDays = iniReader_->GetValue("Currency", "HistoryDays");
+
+	LogCities(cities);
 	databaseEngine->connect("pogoda.db");
-	InitDatabase(databaseEngine.get());
-	StartTasks(std::move(poller), std::move(databaseEngine));
+	InitDatabase(databaseEngine.get(), cities, codes);
+	StartTasks(std::move(weatherPoller), std::move(currencyPoller), std::move(databaseEngine), cities, codes, period, historyDays);
 }
 
 WeatherApp::~WeatherApp()
@@ -47,43 +52,29 @@ void WeatherApp::OnExit()
 	keepRunning_ = false;
 }
 
-void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> poller, std::unique_ptr<IDatabaseEngine> databaseEngine)
+void WeatherApp::StartTasks(std::unique_ptr<IHttpPoller> weatherPoller, std::unique_ptr<IHttpPoller> currencyPoller, std::shared_ptr<IDatabaseEngine> databaseEngine,
+	const std::vector<std::string>& cities, const std::vector<std::string>& codes, const std::string& period, const std::string& historyDays)
 {
 	tasks_.clear();
 	tasks_.emplace_back(std::make_unique<LoggingTask>(std::make_unique<Timer>(10), logger_));
-	tasks_.emplace_back(std::make_unique<WeatherTask>(GetUrls(), std::move(poller), std::make_unique<Timer>(5), std::move(databaseEngine)));
+	tasks_.emplace_back(std::make_unique<WeatherTask>(cities, std::move(weatherPoller), std::make_unique<Timer>(5), databaseEngine));
+	tasks_.emplace_back(std::make_unique<CurrencyTask>(codes, std::make_unique<Timer>(std::stoull(period)), historyDays, databaseEngine, std::move(currencyPoller)));
 	for (auto& task : tasks_)
 	{
 		task->Start();
 	}
 }
 
-std::vector<std::string> WeatherApp::GetUrls()
+void WeatherApp::LogCities(const std::vector<std::string>& cities) const
 {
-	std::vector<std::string> urls;
-	urls.clear();
-	urls.reserve(cities_.size());
-
-	std::string baseUrl = "https://wttr.in/";
-	std::string format = "?format=j1";
-
-	for (const auto& city : cities_)
-	{
-		urls.push_back(baseUrl + city + format);
-	}
-	return urls;
-}
-
-void WeatherApp::LogCities() const
-{
-	if (cities_.empty())
+	if (cities.empty())
 	{
 		logger_->LogCriticalError("Brak miast do monitorowania. Sprawdü plik config.ini.");
 	}
 	else
 	{
 		std::string message = "Wczytano miasta do monitorowania:";
-		for (const auto& city : cities_)
+		for (const auto& city : cities)
 		{
 			message += "\n - " + city;
 		}
@@ -91,14 +82,14 @@ void WeatherApp::LogCities() const
 	}
 }
 
-void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine) const
+void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine, const std::vector<std::string>& cities, const std::vector<std::string>& codes) const
 {
 	std::string createLocationTableQuery =
-		"CREATE TABLE Location(Name TEXT PRIMARY KEY)";
+		"CREATE TABLE IF NOT EXISTS Location(Name TEXT PRIMARY KEY)";
 	databaseEngine->executeQuery(createLocationTableQuery);
 
 	std::string createWeatherDataTableQuery =
-		R"(CREATE TABLE WeatherData
+		R"(CREATE TABLE IF NOT EXISTS WeatherData
 		(
 			ID INTEGER PRIMARY KEY AUTOINCREMENT,
 			Location TEXT NOT NULL,
@@ -107,9 +98,20 @@ void WeatherApp::InitDatabase(IDatabaseEngine* databaseEngine) const
 			Humidity REAL, WindSpeed,
 			FOREIGN KEY(Location) REFERENCES Location(Name)
 			))";
+
+	std::string createCurrencyDataTableQuery = 	
+		R"(CREATE TABLE IF NOT EXISTS Currency
+		(
+			ID INTEGER PRIMARY KEY AUTOINCREMENT,
+			Code TEXT NOT NULL,
+			Time TEXT NOT NULL,
+			BidPrice REAL,
+			AskPrice REAL
+		))";
+	databaseEngine->executeQuery(createCurrencyDataTableQuery);
 	databaseEngine->executeQuery(createWeatherDataTableQuery);
 
-	for (const auto& city : cities_)
+	for (const auto& city : cities)
 	{
 		std::string query =
 			"INSERT INTO Location (Name) "

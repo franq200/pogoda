@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 #include <string>
+#include <thread>
+#include <mutex>
 
 class IDatabaseEngine
 {
@@ -13,11 +16,13 @@ public:
 	virtual void disconnect() = 0;
 	virtual bool isConnected() const = 0;
 	virtual bool executeQuery(const std::string& query) = 0;
-	const QueryResult& getResults() const
+	QueryResult getResults(std::thread::id threadId)
 	{
-		return results_;
+		std::unique_lock<std::mutex> lock(mutex_);
+		return results_.at(threadId);
 	}
 protected:
-	QueryResult results_;
+	std::mutex mutex_;
+	std::unordered_map<std::thread::id, QueryResult> results_;
 };
 
